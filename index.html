@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UMKM ERP Ultimate - Stable v24</title>
+    <title>UMKM ERP Ultimate - Final Fix v27</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
@@ -113,7 +113,6 @@
         #thermal-receipt { display:none; }
 
         /* --- 10. RESPONSIVE MEDIA QUERIES --- */
-        /* Mobile/Tablet Default */
         @media (max-width: 1023px) {
             aside { position:fixed; left:-260px; top:0; height:100%; box-shadow:5px 0 15px rgba(0,0,0,0.1); }
             aside.open { left:0; }
@@ -126,8 +125,6 @@
             .fab-cart { display:flex; }
             @media (min-width: 600px) { .pos-grid { grid-template-columns: repeat(3, 1fr); } }
         }
-
-        /* Desktop */
         @media (min-width: 1024px) {
             aside { position: relative; width: 240px; }
             .nav-text { display: block; }
@@ -137,8 +134,6 @@
             .fab-cart { display: none; }
             .pos-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
         }
-
-        /* Tablet Compact */
         @media (min-width: 768px) and (max-width: 1023px) {
             aside { width: 70px; }
             .nav-text, .brand-text { display: none; }
@@ -147,8 +142,6 @@
     </style>
 </head>
 <body>
-
-    <!-- ================= HTML STRUCTURE ================= -->
 
     <!-- 1. LOADING -->
     <div id="loading-screen">
@@ -255,17 +248,27 @@
         const DB = {
             data: { products: [], transactions: [], purchases: [], employees: [], waOrders: [] },
             init() {
-                // Gunakan v24 untuk memastikan data bersih
-                const store = localStorage.getItem('umkm_erp_v24');
-                if(store) this.data = JSON.parse(store);
-                else {
-                    this.data.products = [ { id:1, name:'Kopi Susu', price:18000, hpp:6000, stock:50, type:'finished' }, { id:2, name:'Americano', price:15000, hpp:5000, stock:40, type:'finished' }, { id:3, name:'Gula Cair', price:0, hpp:40000, stock:5, type:'raw' } ];
+                // Gunakan v27 (Reset) untuk memperbaiki struktur data yang mungkin rusak
+                const store = localStorage.getItem('umkm_erp_v27');
+                if(store) {
+                    this.data = JSON.parse(store);
+                    // Pastikan stok produk selalu angka
+                    this.data.products.forEach(p => {
+                        if(typeof p.stock === 'string') p.stock = parseInt(p.stock);
+                        if(typeof p.hpp === 'string') p.hpp = parseFloat(p.hpp);
+                    });
+                } else {
+                    this.data.products = [ 
+                        { id:1, name:'Kopi Susu', price:18000, hpp:6000, stock:50, type:'finished' }, 
+                        { id:2, name:'Americano', price:15000, hpp:5000, stock:40, type:'finished' }, 
+                        { id:3, name:'Gula Cair', price:0, hpp:40000, stock:5, type:'raw' } 
+                    ];
                     this.data.employees = [ { pin:'1234', name:'Owner', role:'admin' }, { pin:'0000', name:'Kasir', role:'cashier' } ];
                     this.data.waOrders = []; 
                     this.save();
                 }
             },
-            save() { localStorage.setItem('umkm_erp_v24', JSON.stringify(this.data)); },
+            save() { localStorage.setItem('umkm_erp_v27', JSON.stringify(this.data)); },
             
             addTransaction(items, total, pay, change, method) {
                 const trx = { id:'TRX-'+Date.now(), date:new Date().toISOString(), type:'sale', items, total, pay, change, method };
@@ -275,23 +278,31 @@
                 return trx;
             },
             
-            // Purchases (Supply)
+            // Purchases (Supply) - PERBAIKAN LOGIC
             addPurchase(mode, data) {
                 const pur = { id:'PO-'+Date.now(), date:new Date().toISOString(), ...data };
                 this.data.purchases.unshift(pur);
-                // Logic Inventory & Beban
+                
+                // Logic 1: Catat Beban (otomatis via data.purchases)
+                // Logic 2: Update Inventory
                 if (mode === 'new') {
+                    // Input Barang Baru Manual
                     this.data.products.push({
-                        id: pur.productId,
+                        id: data.productId,
                         name: data.name,
-                        price: 0,
-                        hpp: data.hpp,
-                        stock: parseInt(data.qty),
+                        price: 0, 
+                        hpp: parseFloat(data.hpp) || 0,
+                        stock: parseInt(data.qty) || 0, 
                         type: 'raw'
                     });
                 } else if (mode === 'stock') {
+                    // Restock Barang Lama
                     const p = this.data.products.find(x=>x.id === data.productId);
-                    if(p) p.stock += parseInt(data.qty);
+                    if(p) {
+                        const currentStock = parseInt(p.stock) || 0;
+                        const addedStock = parseInt(data.qty) || 0;
+                        p.stock = currentStock + addedStock;
+                    }
                 }
                 this.save();
             },
@@ -409,14 +420,10 @@
                 }
             },
             switchTab(tabId) {
-                // Remove active from all buttons
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                // Add active to clicked button
                 event.target.classList.add('active');
                 
-                // Hide all contents
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                // Show target content
                 document.getElementById('tab-' + tabId).classList.add('active');
             }
         };
@@ -479,7 +486,7 @@
             }
         };
 
-        /* --- 6. VIEWS (HTML GENERATOR - SELF CONTAINED) --- */
+        /* --- 6. VIEWS (HTML GENERATOR - FINAL FIX V27) --- */
         const Views = {
             dashboard() {
                 const today = new Date().toISOString().slice(0, 10);
@@ -518,7 +525,6 @@
                                 ${prods.map(p=>`<div class="product" onclick='Cart.add(${JSON.stringify(p)})'><img src="https://picsum.photos/seed/${p.id}/200/150" class="p-img"><div class="p-body"><div class="font-bold text-sm">${p.name}</div><div class="text-xs text-muted">Stok: ${p.stock}</div><div class="font-bold text-primary">${UI.fmt(p.price)}</div></div></div>`).join('')}
                             </div>
                         </div>
-                        <!-- Desktop Cart Sidebar -->
                         <div class="cart-panel hidden" id="desktop-cart-panel">
                             <div class="p-3 border-bottom font-bold" style="border-bottom:1px solid var(--border);">Keranjang</div>
                             <div id="cart-list" class="cart-list p-3"></div>
@@ -619,7 +625,6 @@
             
             // --- SUPPLY (ADMIN TABS) ---
             supply() {
-                // Generate Data Offline (Tab 1)
                 const today = new Date().toISOString().slice(0, 10);
                 const trxOffline = DB.data.transactions.filter(t => t.date.startsWith(today));
                 const trxOnline = DB.data.waOrders.filter(w => w.date.startsWith(today));
@@ -644,7 +649,7 @@
                 return `
                     <div class="mb-4">
                         <h3 style="margin:0;">🚚 Gudang & Keuangan</h3>
-                        <p class="text-sm text-muted">Manajemen Transaksi, Stok, dan Biaya Operasional</p>
+                        <p class="text-sm text-muted">Manajemen Stok, Biaya Operasional, dan Transaksi</p>
                     </div>
                     
                     <!-- TABS -->
@@ -667,34 +672,37 @@
                         </div>
                     </div>
 
-                    <!-- CONTENT 2: PEMBELIAN -->
+                    <!-- CONTENT 2: PEMBELIAN & STOK -->
                     <div id="tab-buy" class="tab-content">
                         <div class="card" style="border-left:4px solid var(--accent);">
                             <div class="flex items-center justify-between mb-4">
-                                <h3>2. Restock / Belanja Barang</h3>
-                                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="supply-mode-new" onchange="Views.toggleSupplyMode()"> Barang Baru (Bisa tambah di Inventori)</label>
-                            </div>
-                            
-                            <!-- Form Restock -->
-                            <div id="supply-form-stock" class="flex flex-col gap-2 mb-4">
-                                <div class="form-group"><label class="text-xs text-muted">Pilih Barang (Existing)</label><select id="pur-id" class="form-control">${rawOpts}</select></div>
+                                <h3>2. Input Stok & Pembelian</h3>
                                 <div class="flex gap-2">
-                                    <div class="form-group flex-1"><label class="text-xs text-muted">Qty</label><input type="number" id="pur-qty" class="form-control" placeholder="Qty"></div>
-                                    <div class="form-group flex-1"><label class="text-xs text-muted">Total Biaya</label><input type="number" id="pur-cost" class="form-control" placeholder="Total Beli"></div>
+                                    <button class="btn btn-primary" style="background:var(--primary-light); color:var(--primary);" onclick="Views.toggleStockForm('stock')">+ Restock Barang Lama</button>
+                                    <button class="btn btn-success" onclick="Views.toggleStockForm('new')">+ Barang Baru</button>
                                 </div>
                             </div>
-                            <button class="btn btn-primary w-full" onclick="Views.submitStock()">Simpan & Catat Beban</button>
-                        </div>
-
-                        <!-- Form New Product -->
-                        <div id="supply-form-new" class="hidden" style="background:var(--primary-light); padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid var(--border);">
-                            <h4 class="text-sm text-primary mb-3">Data Barang Baru</h4>
-                            <div class="flex gap-2 mb-4 flex-col md:flex-row">
-                                <div class="form-group flex-1"><input type="text" id="new-prod-name" class="form-control" placeholder="Nama Barang"></div>
-                                <div class="form-group flex-1"><input type="number" id="new-prod-hpp" class="form-control" placeholder="HPP Dasar (Modal)"></div>
-                                <div class="form-group flex-1"><input type="number" id="new-prod-stock" class="form-control" placeholder="Jumlah Beli (Stock Awal)"></div>
-                                <div class="form-group flex-1"><input type="number" id="new-prod-cost" class="form-control" placeholder="Total Bayar"></div>
+                            
+                            <!-- Form Restock (Default Visible) -->
+                            <div id="form-stock-container" class="mb-4">
+                                <div class="form-group"><label class="text-xs text-muted">Pilih Barang (Existing)</label><select id="pur-id" class="form-control">${rawOpts}</select></div>
+                                <div class="flex gap-2">
+                                    <div class="form-group flex-1"><label class="text-xs text-muted">Jumlah Tambahan (Qty)</label><input type="number" id="pur-qty" class="form-control" placeholder="Masukkan jumlah..." style="font-weight:bold;"></div>
+                                    <div class="form-group flex-1"><label class="text-xs text-muted">Total Biaya Beli</label><input type="number" id="pur-cost" class="form-control" placeholder="Rp ..." style="font-weight:bold;"></div>
+                                </div>
                             </div>
+                            
+                            <!-- Form New Product (Hidden by default) -->
+                            <div id="form-new-container" class="hidden" style="background:var(--primary-light); padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid var(--border);">
+                                <h4 class="text-sm text-primary mb-3">Input Data Barang Baru (Masuk ke Inventori)</h4>
+                                <div class="flex gap-2 mb-4 flex-col md:flex-row">
+                                    <div class="form-group flex-1"><label class="text-xs text-muted">Nama Barang</label><input type="text" id="new-prod-name" class="form-control" placeholder="Nama Barang"></div>
+                                    <div class="form-group flex-1"><label class="text-xs text-muted">HPP Dasar (Modal)</label><input type="number" id="new-prod-hpp" class="form-control" placeholder="Modal Satuan"></div>
+                                    <div class="form-group flex-1"><label class="text-xs text-muted">Jumlah Beli (Stok Awal)</label><input type="number" id="new-prod-stock" class="form-control" placeholder="Jumlah Beli"></div>
+                                    <div class="form-group flex-1"><label class="text-xs text-muted">Total Bayar</label><input type="number" id="new-prod-cost" class="form-control" placeholder="Total Beli"></div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary w-full" onclick="Views.submitStock()">SIMPAN (Update Inventori & Catat Beban)</button>
                         </div>
                     </div>
 
@@ -713,8 +721,19 @@
                 `;
             },
             
+            toggleStockForm(mode) {
+                const fStock = document.getElementById('form-stock-container');
+                const fNew = document.getElementById('form-new-container');
+                if(mode === 'new') {
+                    fStock.classList.add('hidden');
+                    fNew.classList.remove('hidden');
+                } else {
+                    fStock.classList.remove('hidden');
+                    fNew.classList.add('hidden');
+                }
+            },
+            
             renderDailyTrx() {
-                // Logic Refresh Tab Supply 1 (Jika dipanggil manual setelah load)
                 const today = new Date().toISOString().slice(0, 10);
                 const trxOffline = DB.data.transactions.filter(t => t.date.startsWith(today));
                 const trxOnline = DB.data.waOrders.filter(w => w.date.startsWith(today));
@@ -737,31 +756,31 @@
                 tbody.innerHTML = html;
             },
             
-            toggleSupplyMode() {
-                const isNew = document.getElementById('supply-mode-new').checked;
-                const formStock = document.getElementById('supply-form-stock');
-                const formNew = document.getElementById('supply-form-new');
-                if(isNew) { formStock.classList.add('hidden'); formNew.classList.remove('hidden'); }
-                else { formStock.classList.remove('hidden'); formNew.classList.add('hidden'); }
-            },
             submitStock() {
-                const isNew = document.getElementById('supply-mode-new').checked;
+                const fNewVisible = !document.getElementById('form-new-container').classList.contains('hidden');
+                const isNew = fNewVisible;
+
                 if(isNew) {
                     const name = document.getElementById('new-prod-name').value;
                     const hpp = parseFloat(document.getElementById('new-prod-hpp').value) || 0;
                     const stock = parseInt(document.getElementById('new-prod-stock').value);
                     const cost = parseFloat(document.getElementById('new-prod-cost').value);
                     const id = Date.now().toString();
+                    
                     if(!name || !stock) return UI.toast('Nama & Stok wajib!');
+                    
                     DB.addPurchase('new', { productId: id, name, hpp, qty: stock, total: cost });
-                    UI.toast('Barang Baru Ditambahkan!');
+                    UI.toast('Barang Baru Ditambahkan ke Inventori & Stok Bertambah!');
                 } else {
-                    const id = document.getElementById('pur-id').value, q=parseInt(document.getElementById('pur-qty').value), c=parseFloat(document.getElementById('pur-cost').value);
-                    if(!q||!c) return UI.toast('Isi lengkap!'); 
-                    DB.addPurchase('stock', {productId:id, qty:q, total:c});
-                    UI.toast('Stok Bertambah!');
+                    const id = document.getElementById('pur-id').value;
+                    const q = parseInt(document.getElementById('pur-qty').value);
+                    const c = parseFloat(document.getElementById('pur-cost').value);
+
+                    if(!q || !c) return UI.toast('Isi lengkap!'); 
+                    
+                    DB.addPurchase('stock', { productId:id, qty: q, total: c });
+                    UI.toast('Stok Berhasil Ditambahkan di Inventori & Beban Tercatat!');
                 }
-                // Refresh HTML supply view
                 Router.go('supply');
             },
             submitMisc() {
@@ -782,22 +801,23 @@
                     </table></div>`;
             },
             
-            // PERBAIKAN INVENTORY (SELF-CONTAINED)
+            // --- INVENTORY (V27: RESTORED) ---
             inventory() {
-                // Build HTML langsung berisi data
-                const rows = DB.data.products.map(p=>`<tr><td>${p.name}</td><td class="${p.stock<10?'text-danger font-bold':''}">${p.stock}</td><td>${UI.fmt(p.hpp)}</td><td>${UI.fmt(p.stock*p.hpp)}</td></tr>`).join('');
-                return `<div class="card"><h3>Inventori</h3><table><thead><tr><th>Nama</th><th>Stok</th><th>HPP Dasar</th><th>Nilai Aset</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+                // Pastikan ambil data fresh
+                const products = DB.data.products;
+                const rows = products.map(p=>`<tr><td>${p.name}</td><td class="${p.stock<10?'text-danger font-bold':''}">${p.stock}</td><td>${UI.fmt(p.hpp)}</td><td>${UI.fmt(p.stock*p.hpp)}</td></tr>`).join('');
+                return `<div class="card"><h3>Inventori</h3><table><thead><tr><th>Nama</th><th>Stok</th><th>HPP Dasar</th><th>Nilai Aset</th></tr></thead><tbody id="inv-table-body">${rows}</tbody></table></div>`;
             },
             
-            // PERBAIKAN EMPLOYEES (SELF-CONTAINED)
+            // --- EMPLOYEES (V27: FIXED DUPLICATION) ---
             employees() {
                 // Build HTML langsung berisi data
                 const rows = DB.data.employees.map(e => `<tr><td class="font-bold">${e.name}</td><td><span style="background:${e.role==='admin'?'#e0e7ff':'#f1f5f9'}; color:${e.role==='admin'?'#2563eb':'#64748b'}; padding:4px 8px; border-radius:4px; font-size:0.75rem;">${e.role==='admin'?'Owner':'Kasir'}</span></td><td>${Login.user && Login.user.pin === e.pin ? '' : `<button class="btn btn-danger" style="padding:4px 8px; font-size:0.8rem;" onclick="Views.deleteEmployee('${e.pin}')">Hapus</button>`}</td></tr>`).join('');
                 return `
                     <div class="flex flex-col gap-3">
                         <div class="card"><h3>Tambah Anggota</h3><div class="flex gap-2 mb-4 flex-col md:flex-row"><input type="text" id="emp-name" class="form-control" placeholder="Nama"></div><select id="emp-role" class="form-control"><option value="cashier">Kasir</option><option value="admin">Owner</option></select></div><div class="form-group mb-4"><input type="number" id="emp-pin" class="form-control" placeholder="PIN (4 digit)" maxlength="4"></div><button class="btn btn-primary w-full" onclick="Views.addEmployee()">Simpan</button></div>
-                        <div class="card"><h3>Daftar Tim</h3><table><thead><tr><th>Nama</th><th>Role</th><th>Aksi</th></tr></thead><tbody>${rows}</tbody></table></div>
-                        <div class="card" style="border: 1px solid var(--danger);"><h3 class="text-danger">Zona Bahaya</h3><button class="btn btn-danger w-full" onclick="if(confirm('Reset data?')) { localStorage.removeItem('umkm_erp_v24'); location.reload(); }">Reset Pabrik</button></div>
+                        <div class="card"><h3>Daftar Tim</h3><table><thead><tr><th>Nama</th><th>Role</th><th>Aksi</th></tr></thead><tbody id="emp-table-body">${rows}</tbody></table></div>
+                        <div class="card" style="border: 1px solid var(--danger);"><h3 class="text-danger">Zona Bahaya</h3><button class="btn btn-danger w-full" onclick="if(confirm('Reset data?')) { localStorage.removeItem('umkm_erp_v27'); location.reload(); }">Reset Pabrik</button></div>
                     </div>
                 `;
             },
@@ -812,7 +832,7 @@
                 if(confirm('Hapus?')) { const result = DB.deleteEmployee(pin); UI.toast(result.msg); if(result.success) this.employees(); }
             },
 
-            // Helpers
+            // --- SEARCH ---
             search(type, q) {
                 const grid = document.querySelector('#content .pos-grid:visible');
                 if(grid) {
@@ -822,7 +842,8 @@
                     grid.innerHTML = products.map(p=>`<div class="product" onclick='${fn}(${JSON.stringify(p)})'><img src="https://picsum.photos/seed/${seed}/200/150" class="p-img"><div class="p-body"><div class="font-bold text-sm">${p.name}</div><div class="font-bold text-primary">${UI.fmt(p.price)}</div></div></div>`).join('');
                 }
             },
-            // Print
+            
+            // --- PRINT ---
             print(data) {
                 document.getElementById('r-shop-name').innerText = APP_SETTINGS.shopName;
                 document.getElementById('r-shop-addr').innerText = APP_SETTINGS.shopAddress;
@@ -864,14 +885,18 @@
 
                 // --- INJECT HTML ---
                 const viewEl = document.getElementById('content');
+                
+                // CRITICAL CHECK: Pastikan fungsi ada
                 if(Views[view]) {
                     viewEl.innerHTML = Views[view]();
+                } else {
+                    viewEl.innerHTML = `<div class="text-center p-4 text-muted">Halaman sedang dikembangkan...</div>`;
+                    console.error("View tidak ditemukan: " + view);
                 }
 
                 // --- LOGIC SETELANAH INJECT ---
-                // Untuk Tab Supply, refresh table riwayat (karena HTML sudah diinject, kita tinggal update data)
                 if (view === 'supply') {
-                    Views.renderDailyTrx();
+                    Views.toggleStockForm('stock');
                 }
 
                 // --- CART VISIBILITY LOGIC ---
@@ -880,12 +905,10 @@
                 const dwaCart = document.getElementById('desktop-wa-cart-panel');
                 
                 if (window.innerWidth >= 1024) {
-                    // Desktop
                     if(fab) fab.style.display = 'none';
                     if(view === 'pos' && dCart) dCart.classList.remove('hidden');
                     if(view === 'online' && dwaCart) dwaCart.classList.remove('hidden');
                 } else {
-                    // Mobile
                     if(fab) fab.style.display = 'flex';
                     if(dCart) dCart.classList.add('hidden');
                     if(dwaCart) dwaCart.classList.add('hidden');
@@ -904,7 +927,6 @@
             setTimeout(() => { loader.style.display='none'; document.getElementById('login-screen').style.display='flex'; }, 500);
         };
         window.onresize = () => {
-            // Re-evaluate cart view on resize
             const currentView = document.querySelector('.nav-item.active')?.id.replace('nav-','');
             if(currentView === 'pos' || currentView === 'online') Router.go(currentView);
         };
