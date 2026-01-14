@@ -3,99 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UMKM ERP Ultimate - Clean UI Mobile V2</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <title>UMKM ERP Ultimate - Final Working Version</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
-        /* --- 1. CORE VARIABLES --- */
+        /* --- 1. VARIABLES --- */
         :root {
-            --primary: #0f172a;
-            --primary-light: #f1f5f9;
+            --primary: #0f172a; --primary-light: #f1f5f9;
             --accent: #2563eb;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --bg: #f8fafc;
-            --surface: #ffffff;
-            --text: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --radius: 12px;
+            --bg: #f8fafc; --surface: #ffffff;
+            --text: #1e293b; --text-muted: #64748b;
+            --border: #e2e8f0; --radius: 12px;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
-        /* --- 2. RESET & BASE --- */
+        /* --- 2. RESET & UTILS --- */
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { 
-            margin: 0; 
-            font-family: 'Inter', sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            font-size: 14px; /* Base font size slightly larger for readability */
-            height: 100vh; 
-            overflow: hidden; 
-            line-height: 1.5;
-        }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; height: 100vh; overflow: hidden; line-height: 1.5; }
 
         /* --- 3. UTILITIES --- */
         .hidden { display: none !important; }
-        .flex { display: flex; }
-        .flex-col { flex-direction: column; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .text-center { text-align: center; }
-        .font-bold { font-weight: 600; }
-        .text-sm { font-size: 0.85rem; }
-        .text-xs { font-size: 0.75rem; }
-        .text-muted { color: var(--text-muted); }
-        .text-danger { color: var(--danger); }
-        .text-success { color: var(--success); }
-        .w-full { width: 100%; }
-        .gap-2 { gap: 0.5rem; }
-        .gap-4 { gap: 1rem; }
-        
-        /* Padding adjustments for Mobile vs Desktop */
-        .p-2 { padding: 0.5rem; }
-        .p-3 { padding: 0.75rem; }
-        .p-4 { padding: 1rem; }
-        .mb-2 { margin-bottom: 0.5rem; }
-        .mb-4 { margin-bottom: 1rem; }
+        .flex { display: flex; } .flex-col { flex-direction: column; }
+        .items-center { align-items: center; } .justify-between { justify-content: space-between; } .text-center { text-align: center; }
+        .font-bold { font-weight: 600; } .text-sm { font-size: 0.875rem; } .text-xs { font-size: 0.75rem; }
+        .text-muted { color: var(--text-muted); } .text-danger { color: var(--danger); } .text-success { color: var(--success); }
+        .p-2 { padding: 0.5rem; } .p-3 { padding: 0.75rem; } .p-4 { padding: 1rem; }
+        .mb-4 { margin-bottom: 1rem; } .w-full { width: 100%; }
+        .gap-2 { gap: 0.5rem; } .gap-3 { gap: 0.75rem; } .gap-4 { gap: 1rem; }
+        .badge { padding: 4px 8px; border-radius: 99px; font-size: 0.75rem; font-weight: 600; background:#e2e8f0; }
 
         /* --- 4. COMPONENTS --- */
-        
-        /* Buttons */
-        .btn {
-            padding: 10px 16px; border-radius: 8px; border: none; font-weight: 500; cursor: pointer;
-            transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; justify-content: center;
-            white-space: nowrap;
-        }
+        .btn { padding: 10px 16px; border-radius: 8px; border: none; font-weight: 500; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; justify-content: center; }
         .btn:active { transform: scale(0.98); }
-        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3); }
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.3); }
         .btn-primary:hover { background: #1d4ed8; }
         .btn-success { background: var(--success); color: white; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
         .btn-wa { background: #25D366; color: white; }
-        .btn-icon { padding: 8px; border-radius: 50%; }
-
-        /* Inputs */
-        .form-control { 
-            width:100%; padding:10px 12px; border:1px solid var(--border); 
-            border-radius: 8px; font-size: 0.9rem; background: var(--surface); color: var(--text);
-            transition: border 0.2s;
-        }
+        .form-control { width:100%; padding:10px 12px; border:1px solid var(--border); border-radius: 8px; font-size: 0.9rem; background: var(--surface); transition: 0.2s; }
         .form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
+        .form-group { margin-bottom: 12px; }
+        .label { display:block; margin-bottom:6px; font-size: 0.8rem; font-weight: 600; color: var(--text); }
+        .card { background:var(--surface); border-radius:var(--radius); border:1px solid var(--border); padding:16px; margin-bottom:16px; box-shadow:var(--shadow); }
         
-        /* Cards */
-        .card { 
-            background:var(--surface); border-radius:var(--radius); 
-            border:1px solid var(--border); padding:16px; 
-            margin-bottom:12px; box-shadow:var(--shadow); 
-        }
-
         /* Tables */
         table { width:100%; border-collapse:collapse; font-size: 0.85rem; }
-        th { text-align:left; padding:12px; background:var(--primary-light); color:var(--text-muted); font-weight:600; border-bottom: 2px solid var(--border); }
+        th { text-align:left; padding:12px; background:var(--primary-light); color:var(--text-muted); font-weight:600; border-bottom: 1px solid var(--border); }
         td { padding:12px; border-bottom:1px solid var(--border); vertical-align:middle; }
 
         /* Toast */
@@ -105,188 +62,91 @@
         /* Loading & Login */
         #loading-screen { position: fixed; inset:0; background:var(--primary); z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white; transition:opacity 0.5s; }
         #loading-screen.fading { opacity:0; pointer-events:none; }
-        .spinner { width:40px; height:40px; border:4px solid rgba(255,255,255,0.1); border-top:4px solid var(--accent); border-radius:50%; animation:spin 1s linear infinite; margin-bottom:20px; }
+        .spinner { width:40px; height:40px; border:4px solid rgba(255,255,255,0.1); border-top:4px solid var(--accent); border-radius:50%; animation:spin 1s linear infinite; margin-bottom:20px; background:transparent; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         #login-screen { position: fixed; inset:0; background:var(--bg); z-index:5000; display:none; flex-direction:column; justify-content:center; align-items:center; }
         .login-card { background:white; padding:30px; border-radius:20px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1); width:90%; max-width:340px; text-align:center; }
-        .pin-display { background:var(--primary-light); padding:15px; margin:20px 0; border-radius:12px; font-family:'Roboto Mono', monospace; font-size:2rem; letter-spacing:8px; color:var(--primary); min-height:60px; display:grid; place-items:center; border:2px solid var(--border); }
-        .pin-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
+        .pin-display { background:#f1f5f9; padding:15px; margin:20px 0; border-radius:12px; font-family:'Roboto Mono', monospace; font-size:2rem; letter-spacing:8px; color:var(--primary); min-height:60px; display:grid; place-items:center; border:2px solid var(--border); }
+        .pin-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
         .pin-key { background:white; border:1px solid var(--border); padding:18px; font-size:1.5rem; border-radius:12px; cursor:pointer; color:var(--primary); transition:0.1s; }
         .pin-key:active { background:var(--primary); color:white; transform:scale(0.95); }
 
-        /* --- 5. LAYOUT & NAVIGATION --- */
-        #app-main { display:none; height:100vh; overflow:hidden; }
-        
-        /* Sidebar */
-        aside { 
-            width:260px; 
-            background:var(--surface); 
-            border-right:1px solid var(--border); 
-            display:flex; flex-direction:column; z-index:50; 
-            transition:transform 0.3s ease;
-        }
+        /* --- 5. LAYOUT --- */
+        #app-main { display:none; height:100vh; }
+        aside { width:240px; background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; z-index:50; transition:0.3s; flex-shrink: 0; }
         .nav { flex:1; padding:10px; overflow-y:auto; }
-        .nav-item { 
-            padding:12px 16px; border-radius:10px; margin-bottom:4px; cursor:pointer; 
-            display:flex; align-items:center; gap:12px; font-weight:500; color:var(--text); transition:0.2s; 
-        }
+        .nav-item { padding:12px 16px; border-radius:10px; margin-bottom:4px; cursor:pointer; display:flex; align-items:center; gap:12px; font-weight:500; color:var(--text); transition:0.2s; white-space: nowrap; }
         .nav-item:hover { background:var(--primary-light); }
         .nav-item.active { background:var(--accent); color:white; }
-        .nav-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* Main Content Area */
         main { flex:1; display:flex; flex-direction:column; overflow:hidden; position: relative; background: var(--bg); }
-        header { 
-            height:60px; background:var(--surface); border-bottom:1px solid var(--border); 
-            display:flex; align-items:center; padding:0 16px; justify-content:space-between; flex-shrink: 0;
-        }
+        header { height:60px; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 16px; justify-content:space-between; flex-shrink: 0; }
         .content { flex:1; overflow-y:auto; padding:16px; }
 
-        /* POS Grid */
-        .pos-grid { 
-            display: grid; 
-            /* Default Mobile: 2 columns */
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 12px; 
-        }
-        .product { 
-            border:1px solid var(--border); border-radius:10px; overflow:hidden; 
-            cursor:pointer; transition:0.2s; background:var(--surface); 
-            display: flex; flex-direction: column; 
-        }
+        /* --- 6. POS & CART STYLES --- */
+        .pos-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .product { border:1px solid var(--border); border-radius:10px; overflow:hidden; cursor:pointer; transition:0.2s; background:var(--surface); display:flex; flex-direction:column; }
         .product:active { transform: scale(0.98); }
         .p-img { height:100px; background:#e2e8f0; object-fit:cover; width:100%; }
         .p-body { padding:10px; display:flex; flex-direction:column; justify-content:space-between; flex:1; }
 
-        /* Cart Styles */
         .cart-list { overflow-y:auto; flex:1; }
         .c-item { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px dashed var(--border); font-size:0.9rem; }
 
-        /* FAB (Floating Action Button) for Mobile Cart */
-        .fab-cart {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 60px;
-            height: 60px;
-            border-radius: 30px;
-            background: var(--accent);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 4px 12px rgba(37,99,235,0.4);
-            z-index: 90;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .fab-cart:active { transform: scale(0.9); }
-        .fab-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--danger);
-            color: white;
-            border: 2px solid white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
+        /* --- 7. TABS UI --- */
+        .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .tab-btn { padding: 10px 16px; background: none; border: none; cursor: pointer; color: var(--text-muted); font-weight: 500; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s; }
+        .tab-btn:hover { color: var(--text); background: rgba(0,0,0,0.02); }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        /* --- PRINT TEMPLATE --- */
-        @media print {
-            body > * { display: none !important; }
-            #thermal-receipt { 
-                display: block !important; position: absolute; left:0; top:0; width:58mm; 
-                font-family:'Roboto Mono', monospace; font-size:10px; background:white; padding:2mm; color:black; margin: 0;
-            }
-        }
+        /* --- 8. MOBILE FAB & OVERLAY --- */
+        .fab-cart { position:fixed; bottom:24px; right:24px; width:56px; height:56px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 4px 12px rgba(37,99,235,0.4); z-index:90; cursor:pointer; transition:0.2s; }
+        .fab-cart:active { transform: scale(0.9); }
+        .fab-badge { position:absolute; top:-5px; right:-5px; background:var(--danger); color:white; border:2px solid white; border-radius:50%; width:20px; height:20px; font-size:10px; display:flex; align-items:center; justify-content:center; font-weight:bold; }
+
+        /* --- 9. PRINT & MODAL --- */
+        @media print { body > * { display: none !important; } #thermal-receipt { display: block !important; position: absolute; left:0; top:0; width:58mm; font-family:'Roboto Mono', monospace; font-size:10px; background:white; padding:2mm; color:black; margin: 0; } }
         #thermal-receipt { display:none; }
 
-        /* ================= RESPONSIVE STRATEGY ================= */
-
-        /* MOBILE & TABLET (Shared) */
+        /* --- 10. RESPONSIVE MEDIA QUERIES --- */
+        /* Mobile/Tablet Default */
         @media (max-width: 1023px) {
-            /* Sidebar Off Canvas */
-            aside { position:fixed; left:-100%; top:0; bottom:0; box-shadow:5px 0 15px rgba(0,0,0,0.1); }
+            aside { position:fixed; left:-100%; top:0; height:100%; box-shadow:5px 0 15px rgba(0,0,0,0.1); }
             aside.open { left:0; }
-            
-            /* POS Layout: Vertical Stack */
-            .pos-layout {
-                display: flex;
-                flex-direction: column;
-                height: 100%;
-            }
-            .pos-products { flex: 1; overflow-y: auto; padding-bottom: 80px; /* Space for FAB */ }
-            
-            /* Cart Overlay Modal */
-            .cart-overlay {
-                position: fixed;
-                inset: 0; /* Full Screen */
-                background: var(--bg);
-                z-index: 200;
-                display: none; /* Hidden by default */
-                flex-direction: column;
-                animation: slideUp 0.3s ease-out;
-            }
+            .pos-layout { display:flex; flex-direction:column; gap:20px; height:100%; }
+            .pos-products { flex:1; overflow-y:auto; padding-bottom:80px; }
+            .cart-panel { display:none; }
+            .cart-overlay { position:fixed; inset:0; background:var(--bg); z-index:200; display:none; flex-direction:column; animation: slideUp 0.3s; }
             .cart-overlay.open { display: flex; }
             @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-            /* Grid: Mobile 2 col, Tablet 3 col */
-            @media (min-width: 600px) and (max-width: 1023px) {
-                .pos-grid { grid-template-columns: repeat(3, 1fr); }
-            }
+            .fab-cart { display:flex; }
+            @media (min-width: 600px) { .pos-grid { grid-template-columns: repeat(3, 1fr); } }
         }
 
-        /* DESKTOP (>= 1024px) */
+        /* Desktop */
         @media (min-width: 1024px) {
-            /* Sidebar Fixed */
             aside { position: relative; width: 240px; }
             .nav-text { display: block; }
-
-            /* POS Layout: Split View */
-            .pos-layout {
-                display: flex;
-                flex-direction: row;
-                height: 100%;
-                gap: 20px;
-                padding: 0 20px 20px 20px; /* Adjust padding */
-            }
-            .pos-products {
-                flex: 1;
-                overflow-y: auto;
-            }
-            
-            /* Cart: Sticky Sidebar on Right */
-            .cart-panel {
-                width: 350px;
-                background: var(--surface);
-                border-radius: var(--radius);
-                border:1px solid var(--border);
-                display: flex;
-                flex-direction: column;
-                height: 100%;
-                overflow: hidden;
-                box-shadow: var(--shadow);
-            }
-            
-            /* Hide FAB on Desktop */
+            .pos-layout { display:flex; flex-direction:row; gap:20px; height:calc(100vh - 80px); padding:0 20px 20px 20px; }
+            .pos-products { flex:1; overflow-y:auto; }
+            .cart-panel { width:320px; background:var(--surface); border-radius:12px; border:1px solid var(--border); display:flex; flex-direction:column; height:100%; overflow:hidden; box-shadow: -4px 0 10px rgba(0,0,0,0.05); }
             .fab-cart { display: none; }
-            
-            /* Grid: Auto fill */
             .pos-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
         }
 
+        /* Tablet Compact */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            aside { width: 70px; }
+            .nav-text, .brand-text { display: none; }
+            .nav-item { padding: 14px; justify-content: center; }
+        }
     </style>
 </head>
 <body>
+
+    <!-- ================= HTML STRUCTURE (CONTAINER) ================= -->
 
     <!-- 1. LOADING -->
     <div id="loading-screen">
@@ -302,54 +162,33 @@
             <h3>Login Sistem</h3>
             <div class="pin-display" id="pin-display"></div>
             <div class="pin-grid">
-                <button class="pin-key" onclick="Login.input(1)">1</button>
-                <button class="pin-key" onclick="Login.input(2)">2</button>
-                <button class="pin-key" onclick="Login.input(3)">3</button>
-                <button class="pin-key" onclick="Login.input(4)">4</button>
-                <button class="pin-key" onclick="Login.input(5)">5</button>
-                <button class="pin-key" onclick="Login.input(6)">6</button>
-                <button class="pin-key" onclick="Login.input(7)">7</button>
-                <button class="pin-key" onclick="Login.input(8)">8</button>
-                <button class="pin-key" onclick="Login.input(9)">9</button>
-                <button class="pin-key" onclick="Login.clear()">C</button>
-                <button class="pin-key" onclick="Login.input(0)">0</button>
+                <button class="pin-key" onclick="Login.input(1)">1</button><button class="pin-key" onclick="Login.input(2)">2</button><button class="pin-key" onclick="Login.input(3)">3</button>
+                <button class="pin-key" onclick="Login.input(4)">4</button><button class="pin-key" onclick="Login.input(5)">5</button><button class="pin-key" onclick="Login.input(6)">6</button>
+                <button class="pin-key" onclick="Login.input(7)">7</button><button class="pin-key" onclick="Login.input(8)">8</button><button class="pin-key" onclick="Login.input(9)">9</button>
+                <button class="pin-key" onclick="Login.clear()">C</button><button class="pin-key" onclick="Login.input(0)">0</button>
                 <button class="pin-key" style="background:var(--primary); color:white;" onclick="Login.submit()">OK</button>
             </div>
-            <div class="text-xs mt-4 text-muted">Default: 1234 (Owner), 0000 (Kasir)</div>
+            <div class="text-xs text-muted">Default: 1234 (Owner), 0000 (Kasir)</div>
         </div>
     </div>
 
-    <!-- 3. MAIN APP STRUCTURE -->
+    <!-- 3. MAIN APP -->
     <div id="app-main" class="flex">
         <aside id="sidebar">
-            <div class="p-4 font-bold flex items-center" style="font-size:1.2rem; border-bottom:1px solid var(--border);">
-                🏢 <span class="nav-text">UMKM ERP</span>
+            <div class="p-3 font-bold flex items-center justify-center" style="font-size:1.1rem; border-bottom:1px solid var(--border);">
+                <span>🏢</span> <span class="brand-text ml-2">UMKM ERP</span>
             </div>
             <nav class="nav">
-                <a class="nav-item hidden" onclick="Router.go('dashboard')" id="nav-dashboard">
-                    <span>📊</span> <span class="nav-text">Dashboard</span>
-                </a>
-                <a class="nav-item" onclick="Router.go('pos')" id="nav-pos">
-                    <span>🛒</span> <span class="nav-text">Kasir (POS)</span>
-                </a>
-                <a class="nav-item" onclick="Router.go('inventory')" id="nav-inventory">
-                    <span>📦</span> <span class="nav-text">Inventori</span>
-                </a>
-                <a class="nav-item" onclick="Router.go('supply')" id="nav-supply">
-                    <span>🚚</span> <span class="nav-text">Supply</span>
-                </a>
-                <a class="nav-item hidden" onclick="Router.go('finance')" id="nav-finance">
-                    <span>📈</span> <span class="nav-text">Laporan</span>
-                </a>
-                <a class="nav-item" onclick="Router.go('online')" id="nav-online">
-                    <span>📱</span> <span class="nav-text">Order WA</span>
-                </a>
-                <a class="nav-item hidden" onclick="Router.go('employees')" id="nav-employees">
-                    <span>👥</span> <span class="nav-text">Karyawan</span>
-                </a>
+                <a class="nav-item hidden" id="nav-dashboard" onclick="Router.go('dashboard')"><span>📊</span> <span class="nav-text">Dashboard</span></a>
+                <a class="nav-item" id="nav-pos" onclick="Router.go('pos')"><span>🛒</span> <span class="nav-text">Kasir (Offline)</span></a>
+                <a class="nav-item" id="nav-supply" onclick="Router.go('supply')"><span>🚚</span> <span class="nav-text">Gudang & Keuangan</span></a>
+                <a class="nav-item hidden" id="nav-finance" onclick="Router.go('finance')"><span>📈</span> <span class="nav-text">Laporan</span></a>
+                <a class="nav-item" id="nav-online" onclick="Router.go('online')"><span>📱</span> <span class="nav-text">Order WA</span></a>
+                <a class="nav-item hidden" id="nav-inventory" onclick="Router.go('inventory')"><span>📦</span> <span class="nav-text">Inventori</span></a>
+                <a class="nav-item hidden" id="nav-employees" onclick="Router.go('employees')"><span>👥</span> <span class="nav-text">Karyawan</span></a>
             </nav>
-            <div class="p-4" style="border-top:1px solid var(--border);">
-                <button class="btn btn-ghost w-full" onclick="location.reload()">Keluar Aplikasi</button>
+            <div class="p-3" style="border-top:1px solid var(--border);">
+                <button class="btn btn-ghost w-full" onclick="location.reload()">Keluar</button>
             </div>
         </aside>
 
@@ -359,29 +198,25 @@
                 <div class="font-bold" id="page-title">Dashboard</div>
                 <div class="text-sm text-muted" id="date-display"></div>
             </header>
-            <div id="content" class="content"></div>
+            <div id="content" class="content">
+                <!-- VIEWS WILL BE INJECTED HERE BY JAVASCRIPT -->
+            </div>
         </main>
     </div>
 
-    <!-- FAB: Floating Cart Button (Mobile Only) -->
-    <div id="fab-cart" class="fab-cart" onclick="UI.toggleCart(true)">
-        🛒
-        <div id="fab-badge" class="fab-badge hidden">0</div>
-    </div>
+    <!-- FAB: Floating Cart Button -->
+    <div id="fab-cart" class="fab-cart" onclick="UI.toggleCart(true)">🛒<div id="fab-badge" class="fab-badge hidden">0</div></div>
 
-    <!-- MOBILE CART OVERLAY (Full Screen Overlay) -->
+    <!-- MOBILE CART OVERLAY -->
     <div id="cart-overlay" class="cart-overlay">
-        <header style="background:white; border-bottom:1px solid var(--border);">
+        <header class="flex justify-between items-center" style="padding:16px; background:white; border-bottom:1px solid var(--border);">
             <div class="font-bold">Keranjang Belanja</div>
             <button class="btn btn-ghost" onclick="UI.toggleCart(false)">✕ Tutup</button>
         </header>
         <div id="mobile-cart-list" class="cart-list p-4"></div>
         <div style="padding:16px; background:white; border-top:1px solid var(--border);">
-            <div class="flex justify-between mb-4 items-center">
-                <span class="font-bold">Total</span>
-                <span class="font-bold text-primary" style="font-size:1.5rem;" id="mobile-cart-total">Rp 0</span>
-            </div>
-            <button class="btn btn-primary w-full" onclick="Views.checkout()">Bayar Sekarang</button>
+            <div class="flex justify-between mb-4 items-center"><span class="font-bold">Total</span><span class="font-bold text-primary" style="font-size:1.5rem;" id="mobile-cart-total">Rp 0</span></div>
+            <button class="btn btn-primary w-full" onclick="Views.checkout()">Bayar</button>
         </div>
     </div>
 
@@ -389,20 +224,13 @@
     <div id="thermal-receipt">
         <div style="margin-bottom:5px; text-align:center;">
             <h3 id="r-shop-name" style="margin:0; font-size:14px; font-weight:bold;">NAMA TOKO</h3>
-            <small id="r-shop-addr" style="font-size:10px; display:block;">Alamat Toko</small>
+            <small id="r-shop-addr" style="font-size:10px; display:block;">Alamat</small>
             <small id="r-shop-wa" style="font-size:10px; display:block; font-weight:bold;">WA: 08xx</small>
         </div>
         <hr style="border:1px dashed black; margin: 5px 0;">
-        <div style="display:flex; justify-content:space-between; font-size:10px; margin-bottom:2px;">
-            <span>No: <span id="r-bill-no" style="font-weight:bold; font-size:11px;"></span></span>
-            <span id="r-date"></span>
-        </div>
-        <div style="font-size:10px; margin-bottom:2px; text-align:left;">
-            Tipe: <span id="r-type" style="font-weight:bold;"></span>
-        </div>
-        <div style="font-size:10px; margin-bottom:5px; text-align:left;">
-            Kasir: <span id="r-cashier" style="font-weight:bold;"></span>
-        </div>
+        <div style="display:flex; justify-content:space-between; font-size:10px; margin-bottom:2px;"><span>No: <span id="r-bill-no" style="font-weight:bold;"></span></span><span id="r-date"></span></div>
+        <div style="font-size:10px; margin-bottom:2px; text-align:left;">Tipe: <span id="r-type" style="font-weight:bold;"></span></div>
+        <div style="font-size:10px; margin-bottom:5px; text-align:left;">Kasir: <span id="r-cashier" style="font-weight:bold;"></span></div>
         <hr style="border:1px dashed black; margin: 5px 0;">
         <div id="r-items" style="margin-bottom:5px; text-align:left;"></div>
         <hr style="border:1px dashed black; margin: 5px 0;">
@@ -412,8 +240,7 @@
             <tr id="row-pay"><td style="padding:0;">Bayar</td><td style="text-align:right; padding:0;" id="r-pay"></td></tr>
             <tr id="row-change"><td style="padding:0;">Kembali</td><td style="text-align:right; padding:0;" id="r-change"></td></tr>
         </table>
-        <br>
-        <div style="text-align:center; font-size:10px;">Terima Kasih!</div>
+        <br><div style="text-align:center; font-size:10px;">Terima Kasih!</div>
     </div>
 
     <!-- TOAST -->
@@ -421,34 +248,23 @@
 
     <!-- JAVASCRIPT -->
     <script>
-        /* --- PENGATURAN TOKO --- */
-        const APP_SETTINGS = {
-            shopName: "UMKM MAJU JAYA",
-            shopAddress: "Jl. Sukses No. 1",
-            shopWa: "0812-3456-7890"
-        };
+        /* --- 1. SETTINGS --- */
+        const APP_SETTINGS = { shopName: "UMKM MAJU JAYA", shopAddress: "Jl. Sukses No. 1", shopWa: "0812-3456-7890" };
 
-        /* --- 1. DATA SERVICE --- */
+        /* --- 2. DB CORE --- */
         const DB = {
             data: { products: [], transactions: [], purchases: [], employees: [], waOrders: [] },
             init() {
-                const store = localStorage.getItem('umkm_erp_v15');
+                const store = localStorage.getItem('umkm_erp_v23');
                 if(store) this.data = JSON.parse(store);
                 else {
-                    this.data.products = [
-                        { id:1, name:'Kopi Susu', price:18000, hpp:6000, stock:50, type:'finished' },
-                        { id:2, name:'Americano', price:15000, hpp:5000, stock:40, type:'finished' },
-                        { id:3, name:'Gula Cair', price:0, hpp:40000, stock:5, type:'raw' }
-                    ];
-                    this.data.employees = [
-                        { pin:'1234', name:'Owner', role:'admin' }, 
-                        { pin:'0000', name:'Kasir', role:'cashier' }
-                    ];
+                    this.data.products = [ { id:1, name:'Kopi Susu', price:18000, hpp:6000, stock:50, type:'finished' }, { id:2, name:'Americano', price:15000, hpp:5000, stock:40, type:'finished' }, { id:3, name:'Gula Cair', price:0, hpp:40000, stock:5, type:'raw' } ];
+                    this.data.employees = [ { pin:'1234', name:'Owner', role:'admin' }, { pin:'0000', name:'Kasir', role:'cashier' } ];
                     this.data.waOrders = []; 
                     this.save();
                 }
             },
-            save() { localStorage.setItem('umkm_erp_v15', JSON.stringify(this.data)); },
+            save() { localStorage.setItem('umkm_erp_v23', JSON.stringify(this.data)); },
             
             addTransaction(items, total, pay, change, method) {
                 const trx = { id:'TRX-'+Date.now(), date:new Date().toISOString(), type:'sale', items, total, pay, change, method };
@@ -457,22 +273,43 @@
                 this.save();
                 return trx;
             },
-            addPurchase(type, data) {
-                const pur = { id:'PO-'+Date.now(), date:new Date().toISOString(), type, ...data };
+            
+            // Purchases (Supply)
+            addPurchase(mode, data) {
+                const pur = { id:'PO-'+Date.now(), date:new Date().toISOString(), ...data };
                 this.data.purchases.unshift(pur);
-                if(type==='stock') { const p=this.data.products.find(x=>x.id==data.productId); if(p) p.stock+=parseInt(data.qty); }
+                // Logic Inventory & Beban
+                if (mode === 'new') {
+                    this.data.products.push({
+                        id: pur.productId,
+                        name: data.name,
+                        price: 0,
+                        hpp: data.hpp,
+                        stock: parseInt(data.qty),
+                        type: 'raw'
+                    });
+                } else if (mode === 'stock') {
+                    const p = this.data.products.find(x=>x.id === data.productId);
+                    if(p) p.stock += parseInt(data.qty);
+                }
                 this.save();
             },
+
+            // WA Orders (Online)
             addWAOrder(customer, phone, items, total) {
                 const ord = { id:'WA-'+Date.now(), date:new Date().toISOString(), customer, phone, items, total, status:'pending' };
                 this.data.waOrders.unshift(ord);
+                items.forEach(i => { const p=this.data.products.find(x=>x.id===i.id); if(p) p.stock-=i.qty; });
                 this.save();
                 return ord;
             },
             updateWAStatus(id, status) {
                 const o = this.data.waOrders.find(x=>x.id===id);
-                if(o) { o.status = status; this.save(); return o; } return null;
+                if(o) { o.status = status; this.save(); return o; }
+                return null;
             },
+
+            // Employees
             addEmployee(name, pin, role) {
                 if(this.data.employees.some(e => e.pin === pin)) return { success: false, msg: 'PIN sudah digunakan!' };
                 this.data.employees.push({ name, pin, role });
@@ -490,6 +327,8 @@
                 this.save();
                 return { success: true, msg: 'Karyawan dihapus' };
             },
+
+            // Stats
             getStats(filterDate = null) {
                 let transactions = this.data.transactions;
                 let waOrders = this.data.waOrders;
@@ -502,18 +341,20 @@
                 const revenueOffline = transactions.reduce((s,t)=>s+t.total, 0);
                 const revenueOnline = waOrders.reduce((s,w)=>s+w.total, 0);
                 const totalRevenue = revenueOffline + revenueOnline;
-                const cogs = transactions.reduce((s,t)=>s + t.items.reduce((a,i)=>a+(i.hpp*i.qty),0), 0);
+                const cogsOffline = transactions.reduce((s,t)=>s + t.items.reduce((a,i)=>a+(i.hpp*i.qty),0), 0);
+                const cogsOnline = waOrders.reduce((s,w)=>s + w.items.reduce((a,i)=>a+(i.hpp*i.qty),0), 0);
+                const totalCogs = cogsOffline + cogsOnline;
                 const expense = purchases.reduce((s,p)=>s+p.total, 0);
-                return { revenue: totalRevenue, revenueOffline, revenueOnline, cogs, gross: totalRevenue-cogs, net: (totalRevenue-cogs)-expense, expense };
+                return { revenue: totalRevenue, revenueOffline, revenueOnline, cogs: totalCogs, gross: totalRevenue-totalCogs, net: (totalRevenue-totalCogs)-expense, expense };
             }
         };
 
-        /* --- 2. LOGIN --- */
+        /* --- 3. LOGIN --- */
         const Login = {
             pin: '', user: null,
             input(n) { if(this.pin.length<4) { this.pin+=n; this.update(); } },
             clear() { this.pin=''; this.update(); },
-            update() { document.getElementById('pin-display').textContent=this.pin; },
+            update() { const el=document.getElementById('pin-display'); if(el) el.textContent=this.pin; },
             submit() {
                 const u = DB.data.employees.find(e=>e.pin===this.pin);
                 if(u) { 
@@ -523,6 +364,7 @@
                     if(u.role === 'admin') {
                         document.getElementById('nav-dashboard').classList.remove('hidden');
                         document.getElementById('nav-finance').classList.remove('hidden');
+                        document.getElementById('nav-inventory').classList.remove('hidden');
                         document.getElementById('nav-employees').classList.remove('hidden');
                     } else {
                         Router.go('pos');
@@ -541,7 +383,7 @@
         };
         window.Login = Login;
 
-        /* --- 3. UI & UTILS --- */
+        /* --- 4. UI HELPERS --- */
         const UI = {
             fmt(n) { return 'Rp ' + n.toLocaleString('id-ID'); },
             toast(msg) {
@@ -560,14 +402,28 @@
                 const overlay = document.getElementById('cart-overlay');
                 if(show) {
                     overlay.classList.add('open');
-                    Cart.render(); // Refresh cart content
+                    Cart.render(); 
                 } else {
                     overlay.classList.remove('open');
                 }
+            },
+            switchTab(tabId) {
+                // Remove active from all buttons
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                // Add active to clicked button
+                event.target.classList.add('active');
+                
+                // Hide all contents
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                // Show target content
+                document.getElementById('tab-' + tabId).classList.add('active');
+                
+                // Trigger render if needed
+                if(tabId === 'trx') Views.renderDailyTrx();
             }
         };
 
-        /* --- 4. CART (OFFLINE) --- */
+        /* --- 5. CARTS --- */
         const Cart = {
             items: [],
             add(p) {
@@ -582,44 +438,27 @@
             total() { return this.items.reduce((s,i)=>s+(i.price*i.qty), 0); },
             clear() { this.items = []; this.render(); },
             render() {
-                // Render Desktop Cart (if exists)
                 const list = document.getElementById('cart-list');
+                const mlist = document.getElementById('mobile-cart-list');
                 const totalEl = document.getElementById('cart-total');
-                
-                // Render Mobile Cart (if exists)
-                const mList = document.getElementById('mobile-cart-list');
                 const mTotalEl = document.getElementById('mobile-cart-total');
                 const fabBadge = document.getElementById('fab-badge');
 
-                const htmlItems = this.items.length === 0 ? 
-                    '<div class="text-center text-muted mt-4">Keranjang kosong</div>' : 
-                    this.items.map(i => `
-                        <div class="c-item">
-                            <div><div class="font-bold">${i.name}</div><div class="text-xs text-muted">${i.qty} x ${UI.fmt(i.price)}</div></div>
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold">${UI.fmt(i.price*i.qty)}</span>
-                                <button class="btn btn-danger btn-icon" style="padding:2px 6px;" onclick="Cart.remove(${i.id})">✕</button>
-                            </div>
-                        </div>
-                    `).join('');
-
-                if(list) list.innerHTML = htmlItems;
-                if(totalEl) totalEl.textContent = UI.fmt(this.total());
-
-                if(mList) mList.innerHTML = htmlItems;
-                if(mTotalEl) mTotalEl.textContent = UI.fmt(this.total());
+                const html = this.items.length === 0 ? '<div class="text-center text-muted mt-4">Keranjang kosong</div>' : this.items.map(i => `<div class="c-item"><div><div class="font-bold">${i.name}</div><div class="text-xs text-muted">${i.qty} x ${UI.fmt(i.price)}</div></div><div class="flex items-center gap-2"><span class="font-bold">${UI.fmt(i.price*i.qty)}</span><button class="btn btn-danger" style="padding:2px 6px;" onclick="Cart.remove(${i.id})">✕</button></div></div>`).join('');
                 
-                // Update Badge
-                const count = this.items.reduce((a,i)=>a+i.qty, 0);
+                if(list) list.innerHTML = html;
+                if(mlist) mlist.innerHTML = html;
+                if(totalEl) totalEl.textContent = UI.fmt(this.total());
+                if(mTotalEl) mTotalEl.textContent = UI.fmt(this.total());
+
                 if(fabBadge) {
-                    fabBadge.textContent = count;
-                    if(count > 0) fabBadge.classList.remove('hidden');
+                    fabBadge.textContent = this.items.reduce((a,i)=>a+i.qty, 0);
+                    if(this.items.length > 0) fabBadge.classList.remove('hidden');
                     else fabBadge.classList.add('hidden');
                 }
             }
         };
 
-        /* --- 4B. CART (ONLINE / WA) --- */
         const WACart = {
             items: [],
             add(p) {
@@ -636,13 +475,13 @@
             render() {
                 const list = document.getElementById('wa-cart-list');
                 const totalEl = document.getElementById('wa-cart-total');
-                const htmlItems = this.items.length === 0 ? '<div class="text-center text-muted mt-4">Keranjang kosong</div>' : this.items.map(i => `<div class="c-item"><div><div class="font-bold">${i.name}</div><div class="text-xs text-muted">${i.qty} x ${UI.fmt(i.price)}</div></div><div class="flex items-center gap-2"><span class="font-bold">${UI.fmt(i.price*i.qty)}</span><button class="btn btn-danger btn-icon" style="padding:2px 6px;" onclick="WACart.remove(${i.id})">✕</button></div></div>`).join('');
-                if(list) list.innerHTML = htmlItems;
+                const html = this.items.length === 0 ? '<div class="text-center text-muted mt-4">Keranjang kosong</div>' : this.items.map(i => `<div class="c-item"><div><div class="font-bold">${i.name}</div><div class="text-xs text-muted">${i.qty} x ${UI.fmt(i.price)}</div></div><div class="flex items-center gap-2"><span class="font-bold">${UI.fmt(i.price*i.qty)}</span><button class="btn btn-danger" style="padding:2px 6px;" onclick="WACart.remove(${i.id})">✕</button></div></div>`).join('');
+                if(list) list.innerHTML = html;
                 if(totalEl) totalEl.textContent = UI.fmt(this.total());
             }
         };
 
-        /* --- 5. VIEWS --- */
+        /* --- 6. VIEWS (HTML GENERATOR - FULL RETURN) --- */
         const Views = {
             dashboard() {
                 const today = new Date().toISOString().slice(0, 10);
@@ -650,54 +489,43 @@
                 return `
                     <div class="mb-4">
                         <h2 style="margin:0;">📊 Statistik Hari Ini</h2>
-                        <p class="text-sm text-muted">Data transaksi tanggal ${today}</p>
+                        <p class="text-sm text-muted">${today}</p>
                     </div>
                     <div class="flex flex-col gap-3 mb-4">
                         <div class="card flex justify-between items-center" style="border-left:4px solid var(--primary);">
-                            <div><div class="text-xs text-muted">Penjualan Offline</div><div class="font-bold text-primary" style="font-size:1.5rem;">${UI.fmt(s.revenueOffline)}</div></div>
+                            <div><div class="text-xs text-muted">Penjualan Offline</div><div class="font-bold text-primary" style="font-size:1.4rem;">${UI.fmt(s.revenueOffline)}</div></div>
                         </div>
                         <div class="card flex justify-between items-center" style="border-left:4px solid #25D366;">
-                            <div><div class="text-xs text-muted">Penjualan Online (WA)</div><div class="font-bold text-success" style="font-size:1.5rem;">${UI.fmt(s.revenueOnline)}</div></div>
+                            <div><div class="text-xs text-muted">Penjualan Online (WA)</div><div class="font-bold text-success" style="font-size:1.4rem;">${UI.fmt(s.revenueOnline)}</div></div>
                         </div>
                         <div class="card flex justify-between items-center" style="border-left:4px solid var(--accent);">
-                            <div><div class="text-xs text-muted">TOTAL PENDAPATAN</div><div class="font-bold" style="font-size:1.8rem;">${UI.fmt(s.revenue)}</div></div>
+                            <div><div class="text-xs text-muted">TOTAL PENDAPATAN</div><div class="font-bold" style="font-size:1.6rem; color: var(--accent);">${UI.fmt(s.revenue)}</div></div>
                         </div>
                     </div>
-                    <div class="card">
-                        <h3>Aktivitas Hari Ini</h3>
-                        <table>
-                            <thead><tr><th>Waktu</th><th>Tipe</th><th>Deskripsi</th><th>Nominal</th></tr></thead>
-                            <tbody>
-                                ${DB.data.transactions.filter(t => t.date.startsWith(today)).slice(0,5).map(t=>`<tr><td>${new Date(t.date).toLocaleTimeString()}</td><td><span class="text-primary">OFFLINE</span></td><td>${t.items[0].name}...</td><td>+${UI.fmt(t.total)}</td></tr>`).join('')}
-                                ${DB.data.waOrders.filter(w => w.date.startsWith(today)).slice(0,3).map(w=>`<tr><td>${new Date(w.date).toLocaleTimeString()}</td><td><span class="text-success">ONLINE</span></td><td>${w.customer}</td><td>+${UI.fmt(w.total)}</td></tr>`).join('')}
-                                ${ (DB.data.transactions.filter(t => t.date.startsWith(today)).length === 0 && DB.data.waOrders.filter(w => w.date.startsWith(today)).length === 0) ? '<tr><td colspan="4" class="text-center text-muted">Belum ada transaksi hari ini.</td></tr>' : '' }
-                            </tbody>
-                        </table>
+                    <div class="flex flex-col gap-3 mb-4">
+                        <div class="card"><div class="text-xs text-muted">HPP Barang Terjual</div><div class="text-right text-muted">${UI.fmt(s.cogs)}</div><div class="font-bold">Laba Kotor: ${UI.fmt(s.gross)}</div></div>
+                        <div class="card" style="background:var(--primary); color:white;"><div class="text-xs" style="color:rgba(255,255,255,0.7)">Laba Bersih Hari Ini</div><div class="font-bold" style="font-size:1.5rem; color:white;">${UI.fmt(s.net)}</div></div>
+                        <div class="card"><div class="text-xs text-muted">Total Beban</div><div class="text-right text-danger font-bold">${UI.fmt(s.expense)}</div></div>
                     </div>
                 `;
             },
+
             pos() {
                 const prods = DB.data.products.filter(p=>p.type==='finished');
                 return `
                     <div class="pos-layout">
                         <div class="pos-products">
                             <input type="text" class="form-control mb-4" placeholder="Cari produk..." onkeyup="Views.search('pos', this.value)">
-                            <div class="pos-grid">
-                                ${prods.map(p=>`
-                                    <div class="product" onclick='Cart.add(${JSON.stringify(p)})'>
-                                        <img src="https://picsum.photos/seed/${p.id}/200/150" class="p-img">
-                                        <div class="p-body"><div class="font-bold text-sm">${p.name}</div><div class="text-xs text-muted">Stok: ${p.stock}</div><div class="font-bold text-primary">${UI.fmt(p.price)}</div></div>
-                                    </div>
-                                `).join('')}
+                            <div class="pos-grid" id="pos-grid-container">
+                                ${prods.map(p=>`<div class="product" onclick='Cart.add(${JSON.stringify(p)})'><img src="https://picsum.photos/seed/${p.id}/200/150" class="p-img"><div class="p-body"><div class="font-bold text-sm">${p.name}</div><div class="text-xs text-muted">Stok: ${p.stock}</div><div class="font-bold text-primary">${UI.fmt(p.price)}</div></div></div>`).join('')}
                             </div>
                         </div>
-                        
-                        <!-- DESKTOP ONLY: CART SIDEBAR -->
+                        <!-- Desktop Cart Sidebar -->
                         <div class="cart-panel hidden" id="desktop-cart-panel">
                             <div class="p-3 border-bottom font-bold" style="border-bottom:1px solid var(--border);">Keranjang</div>
                             <div id="cart-list" class="cart-list p-3"></div>
                             <div class="p-3" style="border-top:1px solid var(--border);">
-                                <div class="flex justify-between mb-3 items-center"><span class="font-bold">Total</span><span class="font-bold text-primary" style="font-size:1.4rem;" id="cart-total">Rp 0</span></div>
+                                <div class="flex justify-between mb-3 items-center"><span class="font-bold">Total</span><span class="font-bold text-primary" style="font-size:1.3rem;" id="cart-total">Rp 0</span></div>
                                 <button class="btn btn-primary w-full" onclick="Views.checkout()">Bayar</button>
                             </div>
                         </div>
@@ -709,20 +537,10 @@
                 const total = Cart.total();
                 const html = `
                     <div class="text-center mb-4"><div class="text-sm">Total Tagihan</div><div class="font-bold text-primary" style="font-size:2rem">${UI.fmt(total)}</div></div>
-                    <div class="form-group">
-                        <label class="label">Metode Pembayaran</label>
-                        <select id="pay-method" class="form-control" onchange="Views.togglePayInput('${total}')">
-                            <option value="cash">💵 Tunai (Cash)</option>
-                            <option value="transfer">🏦 Transfer / QRIS</option>
-                        </select>
-                    </div>
-                    <div id="cash-input-group">
-                        <label class="label">Uang Diterima</label>
-                        <input type="number" id="pay-amt" class="form-control" placeholder="Rp ..." style="text-align:right; font-size:1.2rem;" onkeyup="Views.calcChange('${total}')">
-                        <div id="change-disp" class="text-right font-bold mt-2 text-danger">Kembalian: -</div>
-                    </div>
+                    <div class="form-group"><label class="label">Metode</label><select id="pay-method" class="form-control" onchange="Views.togglePayInput('${total}')"><option value="cash">💵 Tunai</option><option value="transfer">🏦 Transfer/QRIS</option></select></div>
+                    <div id="cash-input-group"><label class="label">Uang</label><input type="number" id="pay-amt" class="form-control" placeholder="Rp ..." style="text-align:right" onkeyup="Views.calcChange('${total}')"><div id="change-disp" class="text-right font-bold mt-2 text-danger">Kembalian: -</div></div>
                 `;
-                const btn = `<button class="btn btn-success w-full" onclick="Views.processPay('${total}')">Proses Pembayaran</button>`;
+                const btn = `<button class="btn btn-success w-full" onclick="Views.processPay('${total}')">Proses</button>`;
                 UI.modal('Pembayaran', html, btn);
                 this.togglePayInput(total);
             },
@@ -736,11 +554,8 @@
                 const pay = parseFloat(document.getElementById('pay-amt').value) || 0;
                 const change = pay - total;
                 const disp = document.getElementById('change-disp');
-                if(pay > 0) {
-                    disp.innerHTML = change >= 0 ? `Kembalian: <span class="text-success">${UI.fmt(change)}</span>` : `<span class="text-danger">Kurang: ${UI.fmt(Math.abs(change))}</span>`;
-                } else {
-                    disp.textContent = "Kembalian: -";
-                }
+                if(pay > 0) disp.innerHTML = change >= 0 ? `Kembalian: <span class="text-success">${UI.fmt(change)}</span>` : `<span class="text-danger">Kurang: ${UI.fmt(Math.abs(change))}</span>`;
+                else disp.textContent = "Kembalian: -";
             },
             processPay(total) {
                 const method = document.getElementById('pay-method').value;
@@ -749,50 +564,39 @@
                 if(method === 'cash') {
                     pay = parseFloat(document.getElementById('pay-amt').value) || 0;
                     change = pay - total;
-                    if(pay < total) return UI.toast('Uang tunai kurang!');
+                    if(pay < total) return UI.toast('Kurang!');
                 }
                 const trx = DB.addTransaction(Cart.items, parseFloat(total), pay, change, method);
                 document.querySelector('.modal-overlay')?.remove();
-                const htmlConfirm = `<div class="text-center"><div style="font-size:3rem; color:var(--success)">✅</div><h3>Transaksi Berhasil</h3><p class="text-muted">Pelanggan Offline</p><p class="font-bold" style="font-size:1.2rem">${UI.fmt(total)}</p></div>`;
-                const btnConfirm = `
-                    <button class="btn btn-ghost" onclick="document.querySelector('.modal-overlay')?.remove(); Cart.clear(); Cart.render(); UI.toggleCart(false); Router.go('pos');">Tutup</button>
-                    <button class="btn btn-primary" onclick="Views.printOffline('${trx.id}')">🖨️ Cetak Struk</button>
-                `;
-                UI.modal('Selesai', htmlConfirm, btnConfirm);
+                const html = `<div class="text-center"><div style="font-size:3rem; color:var(--success)">✅</div><h3>Berhasil</h3><p>${UI.fmt(total)}</p></div>`;
+                const btn = `<button class="btn btn-ghost" onclick="document.querySelector('.modal-overlay')?.remove(); Cart.clear(); Cart.render(); UI.toggleCart(false); Router.go('pos');">Tutup</button><button class="btn btn-primary" onclick="Views.printOffline('${trx.id}')">🖨️ Cetak</button>`;
+                UI.modal('Selesai', html, btn);
             },
-            printOffline(id) {
-                const trx = DB.data.transactions.find(t => t.id === id);
-                if(trx) this.print(trx);
-            },
+            printOffline(id) { const trx = DB.data.transactions.find(t => t.id === id); if(trx) this.print(trx); },
             
+            // --- ONLINE ---
             online() {
                 const prods = DB.data.products.filter(p=>p.type==='finished');
                 return `
-                    <div class="flex gap-3 mb-4 flex-col">
-                         <div class="card w-full flex flex-col items-center justify-center p-4" style="border: 1px dashed #25D366; background: #f0fdf4;">
+                    <div class="flex gap-3 mb-4 flex-col md:flex-row">
+                        <div class="card w-full flex flex-col items-center justify-center p-4" style="border: 1px dashed #25D366; background: #f0fdf4;">
                             <h3 style="color:#128C7E; margin: 0 0 10px 0;">📱 WhatsApp Connect</h3>
-                            <button class="btn btn-wa w-full" onclick="window.open('https://web.whatsapp.com', '_blank', 'width=1000,height=800')">🚀 Buka WhatsApp Web</button>
+                            <button class="btn btn-wa w-full" onclick="window.open('https://web.whatsapp.com', '_blank', 'width=1000,height=800')">🚀 Buka WA Web</button>
                         </div>
                     </div>
 
                     <div class="pos-layout">
                         <div class="pos-products">
                             <input type="text" class="form-control mb-4" placeholder="Cari produk..." onkeyup="Views.search('online', this.value)">
-                            <div class="pos-grid">
-                                ${prods.map(p=>`
-                                    <div class="product" onclick='WACart.add(${JSON.stringify(p)})'>
-                                        <img src="https://picsum.photos/seed/wa_${p.id}/200/150" class="p-img">
-                                        <div class="p-body"><div class="font-bold text-sm">${p.name}</div><div class="text-xs text-muted">Stok: ${p.stock}</div><div class="font-bold text-primary">${UI.fmt(p.price)}</div></div>
-                                    </div>
-                                `).join('')}
+                            <div class="pos-grid" id="wa-grid-container">
+                                ${prods.map(p=>`<div class="product" onclick='WACart.add(${JSON.stringify(p)})'><img src="https://picsum.photos/seed/wa_${p.id}/200/150" class="p-img"><div class="p-body"><div class="font-bold text-sm">${p.name}</div><div class="text-xs text-muted">Stok: ${p.stock}</div><div class="font-bold text-primary">${UI.fmt(p.price)}</div></div></div>`).join('')}
                             </div>
                         </div>
-                        <!-- DESKTOP ONLY: CART SIDEBAR (Reuse CSS) -->
                         <div class="cart-panel hidden" id="desktop-wa-cart-panel">
-                            <div class="p-3 border-bottom font-bold" style="border-bottom:1px solid var(--border);">Keranjang Order WA</div>
+                            <div class="p-3 border-bottom font-bold" style="border-bottom:1px solid var(--border);">Keranjang WA</div>
                             <div id="wa-cart-list" class="cart-list p-3"></div>
                             <div class="p-3" style="border-top:1px solid var(--border);">
-                                <div class="flex justify-between mb-3 items-center"><span class="font-bold">Total</span><span class="font-bold text-success" style="font-size:1.4rem;" id="wa-cart-total">Rp 0</span></div>
+                                <div class="flex justify-between mb-3 items-center"><span class="font-bold">Total</span><span class="font-bold text-success" style="font-size:1.3rem;" id="wa-cart-total">Rp 0</span></div>
                                 <button class="btn btn-success w-full" onclick="Views.checkoutWA()">Proses Order</button>
                             </div>
                         </div>
@@ -800,88 +604,212 @@
                 `;
             },
             checkoutWA() {
-                if(WACart.items.length === 0) return UI.toast('Keranjang kosong!');
+                if(WACart.items.length === 0) return UI.toast('Kosong!');
                 const total = WACart.total();
-                const html = `
-                    <div class="text-center mb-4"><div class="text-sm">Total Tagihan</div><div class="font-bold text-success" style="font-size:2rem">${UI.fmt(total)}</div></div>
-                    <div class="form-group"><label class="label">Nama Pelanggan</label><input type="text" id="wa-name" class="form-control" placeholder="Nama"></div></div>
-                    <div class="form-group"><label class="label">Nomor WhatsApp</label><input type="number" id="wa-phone" class="form-control" placeholder="0812..."></div></div>
-                `;
-                const btn = `<button class="btn btn-success w-full" onclick="Views.processWA('${total}')">Simpan & Selesai</button>`;
-                UI.modal('Konfirmasi Order', html, btn);
+                const html = `<div class="text-center mb-4"><div class="text-sm">Total Tagihan</div><div class="font-bold text-success" style="font-size:2rem">${UI.fmt(total)}</div></div><div class="form-group"><input type="text" id="wa-name" class="form-control" placeholder="Nama"></div></div><div class="form-group"><input type="number" id="wa-phone" class="form-control" placeholder="0812..."></div></div>`;
+                const btn = `<button class="btn btn-success w-full" onclick="Views.processWA('${total}')">Simpan</button>`;
+                UI.modal('Konfirmasi', html, btn);
             },
             processWA(total) {
                 const name = document.getElementById('wa-name').value;
                 let phone = document.getElementById('wa-phone').value;
-                if(!name || !phone) return UI.toast('Nama & WA wajib diisi!');
+                if(!name || !phone) return UI.toast('Lengkap!');
                 if(phone.startsWith('0')) phone = '62'+phone.substring(1);
                 const order = DB.addWAOrder(name, phone, WACart.items, parseFloat(total));
                 document.querySelector('.modal-overlay')?.remove();
-                const htmlConfirm = `<div class="text-center"><div style="font-size:3rem; color:#25D366">✅</div><h3>Order Tersimpan</h3><p class="text-muted">${name}</p><p class="font-bold">${UI.fmt(total)}</p></div>`;
-                const btnConfirm = `
-                    <button class="btn btn-ghost" onclick="document.querySelector('.modal-overlay')?.remove(); WACart.clear(); WACart.render(); Router.go('online');">Tutup</button>
-                    <button class="btn btn-primary" onclick="Views.printWA('${order.id}')">🖨️ Cetak</button>
-                `;
-                UI.modal('Selesai', htmlConfirm, btnConfirm);
+                const html = `<div class="text-center"><div style="font-size:3rem; color:#25D366">✅</div><h3>Tersimpan</h3><p>${name}</p><p class="font-bold">${UI.fmt(total)}</p></div>`;
+                const btn = `<button class="btn btn-ghost" onclick="document.querySelector('.modal-overlay')?.remove(); WACart.clear(); WACart.render(); Router.go('online');">Tutup</button><button class="btn btn-primary" onclick="Views.printWA('${order.id}')">🖨️ Cetak</button>`;
+                UI.modal('Selesai', html, btn);
             },
-            printWA(id) {
-                const order = DB.data.waOrders.find(o => o.id === id);
-                if(order) {
-                    const printObj = { id: order.id, total: order.total, items: order.items, customer: order.customer, method: 'online' };
-                    this.print(printObj);
-                }
-            },
-
-            search(type, q) {
-                const g = document.querySelector('#content .pos-grid'); 
-                const prods = DB.data.products.filter(p=>p.type==='finished' && p.name.toLowerCase().includes(q.toLowerCase()));
-                if(g) {
-                    const fn = type === 'pos' ? 'Cart.add' : 'WACart.add';
-                    const seed = type === 'pos' ? p.id : `wa_${p.id}`;
-                    g.innerHTML = prods.map(p=>`<div class="product" onclick='${fn}(${JSON.stringify(p)})'><img src="https://picsum.photos/seed/${seed}/200/150" class="p-img"><div class="p-body"><div class="font-bold text-sm">${p.name}</div><div class="font-bold text-primary">${UI.fmt(p.price)}</div></div></div>`).join('');
-                }
-            },
+            printWA(id) { const order = DB.data.waOrders.find(o => o.id === id); if(order) { const printObj = { id: order.id, total: order.total, items: order.items, method: 'online' }; this.print(printObj); } },
+            
+            // --- SUPPLY (ADMIN TABS) ---
             supply() {
                 const raw = DB.data.products.filter(p=>p.type==='raw');
+                const rawOpts = raw.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+                
                 return `
-                    <div class="card"><h3>1. Belanja Bahan Baku</h3><div class="flex flex-col gap-2 mb-4"><select id="pur-id" class="form-control">${raw.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}</select><div class="flex gap-2"><input type="number" id="pur-qty" placeholder="Qty" class="form-control"><input type="number" id="pur-cost" placeholder="Harga/Unit" class="form-control"></div></div><button class="btn btn-primary w-full" onclick="Views.submitStock()">Simpan Stok</button></div>
-                    <div class="card" style="border-left:4px solid var(--warning);"><h3>2. Catat Pengeluaran Lain</h3><div class="form-group"><label class="label">Nama</label><input type="text" id="misc-name" class="form-control" placeholder="Listrik/ATK"></div><div class="form-group"><label class="label">Biaya</label><input type="number" id="misc-cost" class="form-control"></div><button class="btn btn-danger w-full" onclick="Views.submitMisc()">Catat Beban</button></div>
+                    <div class="mb-4">
+                        <h3 style="margin:0;">🚚 Gudang & Keuangan</h3>
+                        <p class="text-sm text-muted">Manajemen Transaksi, Stok, dan Biaya Operasional</p>
+                    </div>
+                    
+                    <!-- TABS -->
+                    <div class="tabs">
+                        <button class="tab-btn active" onclick="UI.switchTab('trx')">1. Riwayat Transaksi Hari Ini</button>
+                        <button class="tab-btn" onclick="UI.switchTab('buy')">2. Pembelian & Stok</button>
+                        <button class="tab-btn" onclick="UI.switchTab('exp')">3. Pengeluaran Ops</button>
+                    </div>
+
+                    <!-- CONTENT 1: RIWAYAT HARIAN -->
+                    <div id="tab-trx" class="tab-content active">
+                        <div class="card">
+                            <h4 class="text-muted mb-4">Daftar Penjualan Hari Ini (Offline & Online)</h4>
+                            <table>
+                                <thead><tr><th>Waktu</th><th>Tipe</th><th>Detail</th><th>Total</th></tr></thead>
+                                <tbody id="daily-trx-list">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- CONTENT 2: PEMBELIAN -->
+                    <div id="tab-buy" class="tab-content">
+                        <div class="card" style="border-left:4px solid var(--accent);">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3>2. Restock / Belanja Barang</h3>
+                                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="supply-mode-new" onchange="Views.toggleSupplyMode()"> Barang Baru (Bisa tambah di Inventori)</label>
+                            </div>
+                            
+                            <!-- Form Restock -->
+                            <div id="supply-form-stock" class="flex flex-col gap-2 mb-4">
+                                <div class="form-group"><label class="text-xs text-muted">Pilih Barang (Existing)</label><select id="pur-id" class="form-control">${rawOpts}</select></div>
+                                <div class="flex gap-2">
+                                    <div class="form-group flex-1"><label class="text-xs text-muted">Qty</label><input type="number" id="pur-qty" class="form-control" placeholder="Qty"></div>
+                                    <div class="form-group flex-1"><label class="text-xs text-muted">Total Biaya</label><input type="number" id="pur-cost" class="form-control" placeholder="Total Beli"></div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary w-full" onclick="Views.submitStock()">Simpan & Catat Beban</button>
+                        </div>
+
+                        <!-- Form New Product -->
+                        <div id="supply-form-new" class="hidden" style="background:var(--primary-light); padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid var(--border);">
+                            <h4 class="text-sm text-primary mb-3">Data Barang Baru</h4>
+                            <div class="flex gap-2 mb-4 flex-col md:flex-row">
+                                <div class="form-group flex-1"><input type="text" id="new-prod-name" class="form-control" placeholder="Nama Barang"></div>
+                                <div class="form-group flex-1"><input type="number" id="new-prod-hpp" class="form-control" placeholder="HPP Dasar (Modal)"></div>
+                                <div class="form-group flex-1"><input type="number" id="new-prod-stock" class="form-control" placeholder="Jumlah Beli (Stock Awal)"></div>
+                                <div class="form-group flex-1"><input type="number" id="new-prod-cost" class="form-control" placeholder="Total Bayar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CONTENT 3: PENGELUARAN -->
+                    <div id="tab-exp" class="tab-content">
+                        <div class="card" style="border-left:4px solid var(--warning);">
+                            <h3>3. Biaya Operasional</h3>
+                            <p class="text-sm text-muted mb-4">Biaya yang tidak menambah stok (Gaji, Listrik, Air, dll)</p>
+                            <div class="flex gap-2 mb-4 flex-col">
+                                <div class="form-group flex-1"><input type="text" id="misc-name" class="form-control" placeholder="Nama (Listrik, dll)"></div></div>
+                                <div class="form-group flex-1"><input type="number" id="misc-cost" class="form-control" placeholder="Biaya"></div></div>
+                            </div>
+                            <button class="btn btn-danger w-full" onclick="Views.submitMisc()">Catat Beban</button>
+                        </div>
+                    </div>
                 `;
             },
+            
+            renderDailyTrx() {
+                const today = new Date().toISOString().slice(0, 10);
+                const trxOffline = DB.data.transactions.filter(t => t.date.startsWith(today));
+                const trxOnline = DB.data.waOrders.filter(w => w.date.startsWith(today));
+                const tbody = document.getElementById('daily-trx-list');
+                if(!tbody) return;
+
+                let html = '';
+                if(trxOffline.length === 0 && trxOnline.length === 0) {
+                    html = '<tr><td colspan="4" class="text-center text-muted p-4">Belum ada transaksi hari ini.</td></tr>';
+                } else {
+                    trxOffline.forEach(t => {
+                        const itemsSummary = t.items.map(i=>i.name).join(', ').substring(0, 20) + (t.items.length>1 ? '...' : '');
+                        html += `<tr><td class="text-xs">${new Date(t.date).toLocaleTimeString()}</td><td><span class="text-primary">OFFLINE</span></td><td>${itemsSummary}</td><td>${UI.fmt(t.total)}</td></tr>`;
+                    });
+                    trxOnline.forEach(w => {
+                        const itemsSummary = w.items.map(i=>i.name).join(', ').substring(0, 20) + (w.items.length>1 ? '...' : '');
+                        html += `<tr><td class="text-xs">${new Date(w.date).toLocaleTimeString()}</td><td><span class="text-success">ONLINE (WA)</span></td><td>${itemsSummary}</td><td>${UI.fmt(w.total)}</td></tr>`;
+                    });
+                }
+                tbody.innerHTML = html;
+            },
+            
+            toggleSupplyMode() {
+                const isNew = document.getElementById('supply-mode-new').checked;
+                const formStock = document.getElementById('supply-form-stock');
+                const formNew = document.getElementById('supply-form-new');
+                if(isNew) { formStock.classList.add('hidden'); formNew.classList.remove('hidden'); }
+                else { formStock.classList.remove('hidden'); formNew.classList.add('hidden'); }
+            },
             submitStock() {
-                const id = document.getElementById('pur-id').value, q=parseInt(document.getElementById('pur-qty').value), c=parseFloat(document.getElementById('pur-cost').value);
-                if(!q||!c) return UI.toast('Isi lengkap!'); const p=DB.data.products.find(x=>x.id==id); DB.addPurchase('stock', {productId:id, name:p.name, qty:q, total:q*c}); UI.toast('Stok Bertambah'); Router.go('supply');
+                const isNew = document.getElementById('supply-mode-new').checked;
+                if(isNew) {
+                    const name = document.getElementById('new-prod-name').value;
+                    const hpp = parseFloat(document.getElementById('new-prod-hpp').value) || 0;
+                    const stock = parseInt(document.getElementById('new-prod-stock').value);
+                    const cost = parseFloat(document.getElementById('new-prod-cost').value);
+                    const id = Date.now().toString();
+                    if(!name || !stock) return UI.toast('Nama & Stok wajib!');
+                    DB.addPurchase('new', { productId: id, name, hpp, qty: stock, total: cost });
+                    UI.toast('Barang Baru Ditambahkan!');
+                } else {
+                    const id = document.getElementById('pur-id').value, q=parseInt(document.getElementById('pur-qty').value), c=parseFloat(document.getElementById('pur-cost').value);
+                    if(!q||!c) return UI.toast('Isi lengkap!'); 
+                    DB.addPurchase('stock', {productId:id, qty:q, total:c});
+                    UI.toast('Stok Bertambah!');
+                }
+                // Refresh HTML supply view
+                Router.go('supply');
             },
             submitMisc() {
-                const n=document.getElementById('misc-name').value, c=parseFloat(document.getElementById('misc-cost').value); if(!n||!c) return UI.toast('Isi lengkap!'); DB.addPurchase('misc', {name:n, total:c}); UI.toast('Beban Tercatat'); Router.go('supply');
+                const n=document.getElementById('misc-name').value, c=parseFloat(document.getElementById('misc-cost').value); 
+                if(!n||!c) return UI.toast('Isi lengkap!'); 
+                DB.addPurchase('misc', {name:n, total:c}); 
+                UI.toast('Beban Tercatat!'); 
             },
+
             finance() {
-                const s = DB.getStats(null); 
-                return `<div class="card"><h3>Laporan Laba & Rugi</h3><table style="width:100%"><tr><td>Pendapatan</td><td class="text-right font-bold">${UI.fmt(s.revenue)}</td></tr><tr><td style="padding-left:20px">(-) HPP</td><td class="text-right text-danger">(${UI.fmt(s.cogs)})</td></tr><tr style="background:#f1f5f9"><td><b>Laba Kotor</b></td><td class="text-right font-bold">${UI.fmt(s.gross)}</td></tr><tr><td style="padding-left:20px">(-) Beban</td><td class="text-right text-danger">(${UI.fmt(s.expense)})</td></tr><tr style="background:#dcfce7"><td><b>Laba Bersih</b></td><td class="text-right font-bold text-success">${UI.fmt(s.net)}</td></tr></table></div>`;
+                const s = DB.getStats(null);
+                return `<div class="card"><h3>Laporan Laba & Rugi (Terintegrasi)</h3><div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">Perhitungan: Pendapatan - HPP Terjual - Semua Beban</div><table style="width:100%">
+                        <tr><td>Pendapatan (Offline + WA)</td><td class="text-right font-bold">${UI.fmt(s.revenue)}</td></tr>
+                        <tr><td style="padding-left:20px">(-) HPP Barang Terjual</td><td class="text-right text-danger">(${UI.fmt(s.cogs)})</td></tr>
+                        <tr style="background:#f1f5f9"><td><b>Laba Kotor</b></td><td class="text-right font-bold">${UI.fmt(s.gross)}</td></tr>
+                        <tr><td style="padding-left:20px">(-) Total Beban</td><td class="text-right text-danger">(${UI.fmt(s.expense)})</td></tr>
+                        <tr style="background:#dcfce7"><td><b>Laba Bersih</b></td><td class="text-right font-bold text-success">${UI.fmt(s.net)}</td></tr>
+                    </table></div>`;
             },
+            
             inventory() {
-                return `<div class="card"><h3>Inventori</h3><table><thead><tr><th>Nama</th><th>Stok</th><th>Nilai Aset</th></tr></thead><tbody>${DB.data.products.map(p=>`<tr><td>${p.name}</td><td class="${p.stock<10?'text-danger font-bold':''}">${p.stock}</td><td>${UI.fmt(p.stock*p.hpp)}</td></tr>`).join('')}</tbody></table></div>`;
+                return `<div class="card"><h3>Inventori</h3><table><thead><tr><th>Nama</th><th>Stok</th><th>HPP Dasar</th><th>Nilai Aset</th></tr></thead><tbody id="inv-table-body"></tbody></table></div>`;
             },
+            
             employees() {
                 return `
                     <div class="flex flex-col gap-3">
-                        <div class="card"><h3>Tambah Anggota</h3><div class="flex flex-col gap-2 mb-4"><input type="text" id="emp-name" class="form-control" placeholder="Nama Lengkap"><select id="emp-role" class="form-control"><option value="cashier">Kasir</option><option value="admin">Owner</option></select></div><div class="form-group mb-4"><label class="label">PIN (4 Digit)</label><input type="number" id="emp-pin" class="form-control" placeholder="0000" maxlength="4"></div><button class="btn btn-primary w-full" onclick="Views.addEmployee()">Simpan Karyawan</button></div>
-                        <div class="card"><h3>Daftar Tim</h3><table><thead><tr><th>Nama</th><th>Role</th><th>Aksi</th></tr></thead><tbody>${DB.data.employees.map(e => `<tr><td class="font-bold">${e.name}</td><td><span class="badge ${e.role==='admin'?'bg-primary text-white':'bg-gray-200'}">${e.role==='admin'?'Owner':'Kasir'}</span></td><td>${Login.user && Login.user.pin === e.pin ? '<span class="text-xs text-muted">Anda</span>' : `<button class="btn btn-danger" style="padding:4px 8px; font-size:0.8rem;" onclick="Views.deleteEmployee('${e.pin}')">Hapus</button>`}</td></tr>`).join('')}</tbody></table></div>
-                        <div class="card" style="border: 1px solid var(--danger);"><h3 class="text-danger">Zona Bahaya</h3><button class="btn btn-danger w-full" onclick="if(confirm('Yakin reset?')) { localStorage.removeItem('umkm_erp_v15'); location.reload(); }">Reset Data</button></div>
+                        <div class="card"><h3>Tambah Anggota</h3><div class="flex gap-2 mb-4 flex-col md:flex-row"><input type="text" id="emp-name" class="form-control" placeholder="Nama"></div><select id="emp-role" class="form-control"><option value="cashier">Kasir</option><option value="admin">Owner</option></select></div><div class="form-group mb-4"><input type="number" id="emp-pin" class="form-control" placeholder="PIN (4 digit)" maxlength="4"></div><button class="btn btn-primary w-full" onclick="Views.addEmployee()">Simpan</button></div>
+                        <div class="card"><h3>Daftar Tim</h3><table><thead><tr><th>Nama</th><th>Role</th><th>Aksi</th></tr></thead><tbody id="emp-table-body"></tbody></table></div>
+                        <div class="card" style="border: 1px solid var(--danger);"><h3 class="text-danger">Zona Bahaya</h3><button class="btn btn-danger w-full" onclick="if(confirm('Reset?')) { localStorage.removeItem('umkm_erp_v23'); location.reload(); }">Reset Pabrik</button></div>
                     </div>
                 `;
             },
             addEmployee() {
                 const name = document.getElementById('emp-name').value, role = document.getElementById('emp-role').value, pin = document.getElementById('emp-pin').value;
                 if(!name || !pin) return UI.toast('Nama & PIN wajib!');
-                if(pin.length !== 4 || isNaN(pin)) return UI.toast('PIN 4 digit angka!');
+                if(pin.length !== 4 || isNaN(pin)) return UI.toast('PIN 4 digit!');
                 const result = DB.addEmployee(name, pin, role);
-                if(result.success) { UI.toast(result.msg); document.getElementById('emp-name').value=''; document.getElementById('emp-pin').value=''; Router.go('employees'); } else UI.toast(result.msg);
+                if(result.success) { UI.toast(result.msg); document.getElementById('emp-name').value=''; document.getElementById('emp-pin').value=''; this.employees(); } else UI.toast(result.msg);
             },
             deleteEmployee(pin) {
-                if(confirm('Hapus?')) { const result = DB.deleteEmployee(pin); UI.toast(result.msg); if(result.success) Router.go('employees'); }
+                if(confirm('Hapus?')) { const result = DB.deleteEmployee(pin); UI.toast(result.msg); if(result.success) this.employees(); }
+            },
+            employees() { this.renderEmployees(); },
+            renderEmployees() {
+                const tbody = document.getElementById('emp-table-body');
+                if(tbody) {
+                    tbody.innerHTML = DB.data.employees.map(e => `<tr><td class="font-bold">${e.name}</td><td><span style="background:${e.role==='admin'?'#e0e7ff':'#f1f5f9'}; color:${e.role==='admin'?'#2563eb':'#64748b'}; padding:4px 8px; border-radius:4px; font-size:0.75rem;">${e.role==='admin'?'Owner':'Kasir'}</span></td><td>${Login.user && Login.user.pin === e.pin ? '' : `<button class="btn btn-danger" style="padding:4px 8px; font-size:0.8rem;" onclick="Views.deleteEmployee('${e.pin}')">Hapus</button>`}</td></tr>`).join('');
+                }
             },
 
+            // Helpers
+            search(type, q) {
+                const grid = document.querySelector('#content .pos-grid:visible');
+                if(grid) {
+                    const fn = type === 'pos' ? 'Cart.add' : 'WACart.add';
+                    const seed = type === 'pos' ? p.id : `wa_${p.id}`;
+                    const products = DB.data.products.filter(p=>p.type==='finished' && p.name.toLowerCase().includes(q.toLowerCase()));
+                    grid.innerHTML = products.map(p=>`<div class="product" onclick='${fn}(${JSON.stringify(p)})'><img src="https://picsum.photos/seed/${seed}/200/150" class="p-img"><div class="p-body"><div class="font-bold text-sm">${p.name}</div><div class="font-bold text-primary">${UI.fmt(p.price)}</div></div></div>`).join('');
+                }
+            },
+            // Print
             print(data) {
                 document.getElementById('r-shop-name').innerText = APP_SETTINGS.shopName;
                 document.getElementById('r-shop-addr').innerText = APP_SETTINGS.shopAddress;
@@ -889,10 +817,10 @@
                 document.getElementById('r-date').innerText = new Date().toLocaleString('id-ID');
                 document.getElementById('r-bill-no').innerText = data.id;
                 document.getElementById('r-cashier').innerText = Login.user ? Login.user.name : 'Admin';
-                document.getElementById('r-type').innerText = data.method === 'online' ? 'ONLINE' : 'OFFLINE';
+                document.getElementById('r-type').innerText = data.method === 'online' ? 'ONLINE (WhatsApp)' : 'OFFLINE (Toko)';
                 const methodMap = { 'cash': 'TUNAI', 'transfer': 'TRANSFER', 'online': 'ONLINE' };
                 document.getElementById('r-method').innerText = methodMap[data.method] || 'CASH';
-                const items = data.items || [{ name: data.msg || "Order Online", qty: 1, price: data.total }];
+                const items = data.items || [{ name: data.msg || "Order", qty: 1, price: data.total }];
                 document.getElementById('r-items').innerHTML = items.map(i => `<div style="display:flex;justify-content:space-between; margin-bottom:2px;"><span style="width:60%;">${i.name} x${i.qty}</span><span style="width:40%; text-align:right;">${UI.fmt(i.price*i.qty)}</span></div>`).join('');
                 document.getElementById('r-total').innerText = UI.fmt(data.total);
                 const rowPay = document.getElementById('row-pay'), rowChange = document.getElementById('row-change');
@@ -908,50 +836,72 @@
             }
         };
 
-        /* --- 6. ROUTER --- */
+        /* --- 7. ROUTER --- */
         const Router = {
             go(view) {
-                if(Login.user?.role === 'cashier' && ['finance','supply','employees','dashboard'].includes(view)) return UI.toast('Akses Ditolak');
-                document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
-                document.getElementById('nav-'+view)?.classList.add('active');
-                document.getElementById('page-title').textContent = view.toUpperCase();
-                document.getElementById('content').innerHTML = Views[view] ? Views[view]() : 'Coming Soon';
+                // Security
+                if(Login.user?.role === 'cashier' && ['finance','supply','employees','dashboard','inventory'].includes(view)) return UI.toast('Akses Ditolak');
                 
-                // Logic Tampilan Desktop Cart
-                const fab = document.getElementById('fab-cart');
-                const desktopPanel = document.getElementById('desktop-cart-panel');
-                const desktopWAPanel = document.getElementById('desktop-wa-cart-panel');
+                // Navigation Highlight
+                document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
+                const navItem = document.getElementById('nav-'+view);
+                if(navItem) navItem.classList.add('active');
+                
+                document.getElementById('page-title').textContent = view.toUpperCase();
 
-                if(window.innerWidth >= 1024) {
-                    // Desktop: Hide FAB, Show Cart Panel in POS/WA
-                    if(fab) fab.style.display = 'none';
-                    if(view === 'pos' && desktopPanel) desktopPanel.classList.remove('hidden');
-                    if(view === 'online' && desktopWAPanel) desktopWAPanel.classList.remove('hidden');
-                } else {
-                    // Mobile: Show FAB, Hide Desktop Panel
-                    if(fab) fab.style.display = 'flex';
-                    if(desktopPanel) desktopPanel.classList.add('hidden');
-                    if(desktopWAPanel) desktopWAPanel.classList.add('hidden');
+                // --- RENDER HTML (INJECT) ---
+                const viewEl = document.getElementById('content'); // Inject into main content
+                if(Views[view]) {
+                    viewEl.innerHTML = Views[view]();
                 }
 
-                if(view==='pos') Cart.render();
-                if(view==='online') WACart.render();
+                // --- LOGIC AFTER RENDER ---
+                if (view === 'supply') {
+                    // Tab 1 is active by default in HTML, so just populate data
+                    Views.renderDailyTrx();
+                }
+                
+                if (view === 'inventory') {
+                    Views.renderInventoryTable();
+                }
+                if (view === 'employees') {
+                    Views.renderEmployees();
+                }
+
+                // --- CART VISIBILITY LOGIC ---
+                const fab = document.getElementById('fab-cart');
+                const dCart = document.getElementById('desktop-cart-panel');
+                const dwaCart = document.getElementById('desktop-wa-cart-panel');
+                
+                if (window.innerWidth >= 1024) {
+                    // Desktop
+                    if(fab) fab.style.display = 'none';
+                    if(view === 'pos' && dCart) dCart.classList.remove('hidden');
+                    if(view === 'online' && dwaCart) dwaCart.classList.remove('hidden');
+                } else {
+                    // Mobile
+                    if(fab) fab.style.display = 'flex';
+                    if(dCart) dCart.classList.add('hidden');
+                    if(dwaCart) dwaCart.classList.add('hidden');
+                }
+
+                if(view === 'pos') Cart.render();
+                if(view === 'online') WACart.render();
             }
         };
 
-        /* --- 7. BOOTSTRAP --- */
+        /* --- 8. BOOTSTRAP --- */
         window.onload = () => {
             document.getElementById('date-display').textContent = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             DB.init();
             const loader = document.getElementById('loading-screen');
-            loader.classList.add('fading');
-            setTimeout(() => { loader.style.display='none'; document.getElementById('login-screen').style.display='flex'; }, 600);
+            loader.style.opacity = '0';
+            setTimeout(() => { loader.style.display='none'; document.getElementById('login-screen').style.display='flex'; }, 500);
         };
-        
-        // Handle resize to update cart view
         window.onresize = () => {
+            // Re-evaluate cart view on resize
             const currentView = document.querySelector('.nav-item.active')?.id.replace('nav-','');
-            if(currentView) Router.go(currentView);
+            if(currentView === 'pos' || currentView === 'online') Router.go(currentView);
         };
     </script>
 </body>
