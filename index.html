@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UMKM ERP Ultimate - Final Fix v27</title>
+    <title>UMKM ERP Ultimate - Final Fix v28</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
@@ -143,14 +143,12 @@
 </head>
 <body>
 
-    <!-- 1. LOADING -->
     <div id="loading-screen">
         <div class="spinner"></div>
         <h2 style="margin:10px 0 0 0; font-weight:700;">UMKM ERP</h2>
         <p>Memuat Sistem...</p>
     </div>
 
-    <!-- 2. LOGIN -->
     <div id="login-screen">
         <div class="login-card">
             <div style="font-size:3rem; margin-bottom:10px;">🔐</div>
@@ -167,7 +165,6 @@
         </div>
     </div>
 
-    <!-- 3. MAIN APP -->
     <div id="app-main">
         <aside id="sidebar">
             <div class="p-3 font-bold flex items-center justify-center" style="font-size:1.1rem; border-bottom:1px solid var(--border);">
@@ -176,9 +173,13 @@
             <nav class="nav">
                 <a class="nav-item hidden" id="nav-dashboard" onclick="Router.go('dashboard')"><span>📊</span> <span class="nav-text">Dashboard</span></a>
                 <a class="nav-item" id="nav-pos" onclick="Router.go('pos')"><span>🛒</span> <span class="nav-text">Kasir (Offline)</span></a>
-                <a class="nav-item" id="nav-supply" onclick="Router.go('supply')"><span>🚚</span> <span class="nav-text">Gudang & Keuangan</span></a>
-                <a class="nav-item hidden" id="nav-finance" onclick="Router.go('finance')"><span>📈</span> <span class="nav-text">Laporan</span></a>
                 <a class="nav-item" id="nav-online" onclick="Router.go('online')"><span>📱</span> <span class="nav-text">Order WA</span></a>
+                
+                <a class="nav-item hidden" id="nav-sales" onclick="Router.go('sales')"><span>💰</span> <span class="nav-text">Riwayat Penjualan</span></a>
+                <a class="nav-item hidden" id="nav-expenses" onclick="Router.go('expenses')"><span>💸</span> <span class="nav-text">Riwayat Pengeluaran</span></a>
+                
+                <a class="nav-item" id="nav-supply" onclick="Router.go('supply')"><span>🚚</span> <span class="nav-text">Gudang & Keuangan</span></a>
+                <a class="nav-item hidden" id="nav-finance" onclick="Router.go('finance')"><span>📈</span> <span class="nav-text">Laporan L/R</span></a>
                 <a class="nav-item hidden" id="nav-inventory" onclick="Router.go('inventory')"><span>📦</span> <span class="nav-text">Inventori</span></a>
                 <a class="nav-item hidden" id="nav-employees" onclick="Router.go('employees')"><span>👥</span> <span class="nav-text">Karyawan</span></a>
             </nav>
@@ -197,10 +198,8 @@
         </main>
     </div>
 
-    <!-- FAB: Floating Cart Button -->
     <div id="fab-cart" class="fab-cart" onclick="UI.toggleCart(true)">🛒<div id="fab-badge" class="fab-badge hidden">0</div></div>
 
-    <!-- MOBILE CART OVERLAY -->
     <div id="cart-overlay" class="cart-overlay">
         <header class="flex justify-between items-center" style="padding:16px; background:white; border-bottom:1px solid var(--border);">
             <div class="font-bold">Keranjang Belanja</div>
@@ -213,7 +212,6 @@
         </div>
     </div>
 
-    <!-- THERMAL RECEIPT -->
     <div id="thermal-receipt">
         <div style="margin-bottom:5px; text-align:center;">
             <h3 id="r-shop-name" style="margin:0; font-size:14px; font-weight:bold;">NAMA TOKO</h3>
@@ -236,10 +234,8 @@
         <br><div style="text-align:center; font-size:10px;">Terima Kasih!</div>
     </div>
 
-    <!-- TOAST -->
     <div id="toast-msg" class="toast">Notifikasi</div>
 
-    <!-- JAVASCRIPT -->
     <script>
         /* --- 1. SETTINGS --- */
         const APP_SETTINGS = { shopName: "UMKM MAJU JAYA", shopAddress: "Jl. Sukses No. 1", shopWa: "0812-3456-7890" };
@@ -248,11 +244,9 @@
         const DB = {
             data: { products: [], transactions: [], purchases: [], employees: [], waOrders: [] },
             init() {
-                // Gunakan v27 (Reset) untuk memperbaiki struktur data yang mungkin rusak
-                const store = localStorage.getItem('umkm_erp_v27');
+                const store = localStorage.getItem('umkm_erp_v28');
                 if(store) {
                     this.data = JSON.parse(store);
-                    // Pastikan stok produk selalu angka
                     this.data.products.forEach(p => {
                         if(typeof p.stock === 'string') p.stock = parseInt(p.stock);
                         if(typeof p.hpp === 'string') p.hpp = parseFloat(p.hpp);
@@ -268,7 +262,7 @@
                     this.save();
                 }
             },
-            save() { localStorage.setItem('umkm_erp_v27', JSON.stringify(this.data)); },
+            save() { localStorage.setItem('umkm_erp_v28', JSON.stringify(this.data)); },
             
             addTransaction(items, total, pay, change, method) {
                 const trx = { id:'TRX-'+Date.now(), date:new Date().toISOString(), type:'sale', items, total, pay, change, method };
@@ -278,15 +272,11 @@
                 return trx;
             },
             
-            // Purchases (Supply) - PERBAIKAN LOGIC
             addPurchase(mode, data) {
-                const pur = { id:'PO-'+Date.now(), date:new Date().toISOString(), ...data };
+                const pur = { id:'PO-'+Date.now(), date:new Date().toISOString(), ...data, type: mode };
                 this.data.purchases.unshift(pur);
                 
-                // Logic 1: Catat Beban (otomatis via data.purchases)
-                // Logic 2: Update Inventory
                 if (mode === 'new') {
-                    // Input Barang Baru Manual
                     this.data.products.push({
                         id: data.productId,
                         name: data.name,
@@ -296,32 +286,22 @@
                         type: 'raw'
                     });
                 } else if (mode === 'stock') {
-                    // Restock Barang Lama
-                    const p = this.data.products.find(x=>x.id === data.productId);
+                    const p = this.data.products.find(x=>x.id == data.productId);
                     if(p) {
-                        const currentStock = parseInt(p.stock) || 0;
-                        const addedStock = parseInt(data.qty) || 0;
-                        p.stock = currentStock + addedStock;
+                        p.stock = (parseInt(p.stock) || 0) + (parseInt(data.qty) || 0);
                     }
                 }
                 this.save();
             },
 
-            // WA Orders (Online)
             addWAOrder(customer, phone, items, total) {
-                const ord = { id:'WA-'+Date.now(), date:new Date().toISOString(), customer, phone, items, total, status:'pending' };
+                const ord = { id:'WA-'+Date.now(), date:new Date().toISOString(), customer, phone, items, total, status:'completed' };
                 this.data.waOrders.unshift(ord);
                 items.forEach(i => { const p=this.data.products.find(x=>x.id===i.id); if(p) p.stock-=i.qty; });
                 this.save();
                 return ord;
             },
-            updateWAStatus(id, status) {
-                const o = this.data.waOrders.find(x=>x.id===id);
-                if(o) { o.status = status; this.save(); return o; }
-                return null;
-            },
 
-            // Employees
             addEmployee(name, pin, role) {
                 if(this.data.employees.some(e => e.pin === pin)) return { success: false, msg: 'PIN sudah digunakan!' };
                 this.data.employees.push({ name, pin, role });
@@ -340,7 +320,6 @@
                 return { success: true, msg: 'Karyawan dihapus' };
             },
 
-            // Stats
             getStats(filterDate = null) {
                 let transactions = this.data.transactions;
                 let waOrders = this.data.waOrders;
@@ -374,10 +353,7 @@
                     document.getElementById('login-screen').style.display='none'; 
                     document.getElementById('app-main').style.display='flex'; 
                     if(u.role === 'admin') {
-                        document.getElementById('nav-dashboard').classList.remove('hidden');
-                        document.getElementById('nav-finance').classList.remove('hidden');
-                        document.getElementById('nav-inventory').classList.remove('hidden');
-                        document.getElementById('nav-employees').classList.remove('hidden');
+                        document.querySelectorAll('.nav-item.hidden').forEach(el => el.classList.remove('hidden'));
                     } else {
                         Router.go('pos');
                         return; 
@@ -393,11 +369,18 @@
                 setTimeout(()=>d.style.transform='translateX(0)',100); 
             }
         };
-        window.Login = Login;
 
         /* --- 4. UI HELPERS --- */
         const UI = {
             fmt(n) { return 'Rp ' + n.toLocaleString('id-ID'); },
+            fmtDateTime(iso) {
+                const d = new Date(iso);
+                const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                const day = days[d.getDay()];
+                const date = d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' });
+                const time = d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+                return `${day}, ${date} - ${time}`;
+            },
             toast(msg) {
                 const t=document.getElementById('toast-msg'); t.textContent=msg; t.classList.add('show');
                 setTimeout(()=>t.classList.remove('show'), 3000);
@@ -412,17 +395,12 @@
             },
             toggleCart(show) {
                 const overlay = document.getElementById('cart-overlay');
-                if(show) {
-                    overlay.classList.add('open');
-                    Cart.render(); 
-                } else {
-                    overlay.classList.remove('open');
-                }
+                if(show) { overlay.classList.add('open'); Cart.render(); } 
+                else { overlay.classList.remove('open'); }
             },
             switchTab(tabId) {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 event.target.classList.add('active');
-                
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 document.getElementById('tab-' + tabId).classList.add('active');
             }
@@ -436,66 +414,39 @@
                 if(ex) ex.qty++; else this.items.push({...p, qty:1});
                 this.render();
             },
-            remove(id) {
-                this.items = this.items.filter(i=>i.id!==id);
-                this.render();
-            },
+            remove(id) { this.items = this.items.filter(i=>i.id!==id); this.render(); },
             total() { return this.items.reduce((s,i)=>s+(i.price*i.qty), 0); },
             clear() { this.items = []; this.render(); },
             render() {
-                const list = document.getElementById('cart-list');
-                const mlist = document.getElementById('mobile-cart-list');
-                const totalEl = document.getElementById('cart-total');
-                const mTotalEl = document.getElementById('mobile-cart-total');
-                const fabBadge = document.getElementById('fab-badge');
-
+                const list = document.getElementById('cart-list'), mlist = document.getElementById('mobile-cart-list');
+                const totalEl = document.getElementById('cart-total'), mTotalEl = document.getElementById('mobile-cart-total'), fabBadge = document.getElementById('fab-badge');
                 const html = this.items.length === 0 ? '<div class="text-center text-muted mt-4">Keranjang kosong</div>' : this.items.map(i => `<div class="c-item"><div><div class="font-bold">${i.name}</div><div class="text-xs text-muted">${i.qty} x ${UI.fmt(i.price)}</div></div><div class="flex items-center gap-2"><span class="font-bold">${UI.fmt(i.price*i.qty)}</span><button class="btn btn-danger" style="padding:2px 6px;" onclick="Cart.remove(${i.id})">✕</button></div></div>`).join('');
-                
-                if(list) list.innerHTML = html;
-                if(mlist) mlist.innerHTML = html;
-                if(totalEl) totalEl.textContent = UI.fmt(this.total());
-                if(mTotalEl) mTotalEl.textContent = UI.fmt(this.total());
-
-                if(fabBadge) {
-                    fabBadge.textContent = this.items.reduce((a,i)=>a+i.qty, 0);
-                    if(this.items.length > 0) fabBadge.classList.remove('hidden');
-                    else fabBadge.classList.add('hidden');
-                }
+                if(list) list.innerHTML = html; if(mlist) mlist.innerHTML = html;
+                if(totalEl) totalEl.textContent = UI.fmt(this.total()); if(mTotalEl) mTotalEl.textContent = UI.fmt(this.total());
+                if(fabBadge) { fabBadge.textContent = this.items.reduce((a,i)=>a+i.qty, 0); if(this.items.length > 0) fabBadge.classList.remove('hidden'); else fabBadge.classList.add('hidden'); }
             }
         };
 
         const WACart = {
             items: [],
-            add(p) {
-                const ex = this.items.find(i=>i.id===p.id);
-                if(ex) ex.qty++; else this.items.push({...p, qty:1});
-                this.render();
-            },
-            remove(id) {
-                this.items = this.items.filter(i=>i.id!==id);
-                this.render();
-            },
+            add(p) { const ex = this.items.find(i=>i.id===p.id); if(ex) ex.qty++; else this.items.push({...p, qty:1}); this.render(); },
+            remove(id) { this.items = this.items.filter(i=>i.id!==id); this.render(); },
             total() { return this.items.reduce((s,i)=>s+(i.price*i.qty), 0); },
             clear() { this.items = []; this.render(); },
             render() {
-                const list = document.getElementById('wa-cart-list');
-                const totalEl = document.getElementById('wa-cart-total');
+                const list = document.getElementById('wa-cart-list'), totalEl = document.getElementById('wa-cart-total');
                 const html = this.items.length === 0 ? '<div class="text-center text-muted mt-4">Keranjang kosong</div>' : this.items.map(i => `<div class="c-item"><div><div class="font-bold">${i.name}</div><div class="text-xs text-muted">${i.qty} x ${UI.fmt(i.price)}</div></div><div class="flex items-center gap-2"><span class="font-bold">${UI.fmt(i.price*i.qty)}</span><button class="btn btn-danger" style="padding:2px 6px;" onclick="WACart.remove(${i.id})">✕</button></div></div>`).join('');
-                if(list) list.innerHTML = html;
-                if(totalEl) totalEl.textContent = UI.fmt(this.total());
+                if(list) list.innerHTML = html; if(totalEl) totalEl.textContent = UI.fmt(this.total());
             }
         };
 
-        /* --- 6. VIEWS (HTML GENERATOR - FINAL FIX V27) --- */
+        /* --- 6. VIEWS --- */
         const Views = {
             dashboard() {
                 const today = new Date().toISOString().slice(0, 10);
                 const s = DB.getStats(today);
                 return `
-                    <div class="mb-4">
-                        <h2 style="margin:0;">📊 Statistik Hari Ini</h2>
-                        <p class="text-sm text-muted">${today}</p>
-                    </div>
+                    <div class="mb-4"><h2 style="margin:0;">📊 Statistik Hari Ini</h2><p class="text-sm text-muted">${today}</p></div>
                     <div class="flex flex-col gap-3 mb-4">
                         <div class="card flex justify-between items-center" style="border-left:4px solid var(--primary);">
                             <div><div class="text-xs text-muted">Penjualan Offline</div><div class="font-bold text-primary" style="font-size:1.4rem;">${UI.fmt(s.revenueOffline)}</div></div>
@@ -536,6 +487,7 @@
                     </div>
                 `;
             },
+
             checkout() {
                 if(Cart.items.length === 0) return UI.toast('Keranjang kosong!');
                 const total = Cart.total();
@@ -544,56 +496,41 @@
                 UI.modal('Pembayaran', html, btn);
                 this.togglePayInput(total);
             },
+
             togglePayInput(total) {
-                const method = document.getElementById('pay-method').value;
-                const group = document.getElementById('cash-input-group');
-                if(method === 'transfer') group.style.display = 'none';
-                else group.style.display = 'block';
+                const method = document.getElementById('pay-method').value, group = document.getElementById('cash-input-group');
+                if(method === 'transfer') group.style.display = 'none'; else group.style.display = 'block';
             },
+
             calcChange(total) {
-                const pay = parseFloat(document.getElementById('pay-amt').value) || 0;
-                const change = pay - total;
-                const disp = document.getElementById('change-disp');
+                const pay = parseFloat(document.getElementById('pay-amt').value) || 0, change = pay - total, disp = document.getElementById('change-disp');
                 if(pay > 0) disp.innerHTML = change >= 0 ? `Kembalian: <span class="text-success">${UI.fmt(change)}</span>` : `<span class="text-danger">Kurang: ${UI.fmt(Math.abs(change))}</span>`;
                 else disp.textContent = "Kembalian: -";
             },
+
             processPay(total) {
                 const method = document.getElementById('pay-method').value;
-                let pay = parseFloat(total);
-                let change = 0;
-                if(method === 'cash') {
-                    pay = parseFloat(document.getElementById('pay-amt').value) || 0;
-                    change = pay - total;
-                    if(pay < total) return UI.toast('Kurang!');
-                }
+                let pay = parseFloat(total), change = 0;
+                if(method === 'cash') { pay = parseFloat(document.getElementById('pay-amt').value) || 0; change = pay - total; if(pay < total) return UI.toast('Kurang!'); }
                 const trx = DB.addTransaction(Cart.items, parseFloat(total), pay, change, method);
                 document.querySelector('.modal-overlay')?.remove();
                 const html = `<div class="text-center"><div style="font-size:3rem; color:var(--success)">✅</div><h3>Berhasil</h3><p>${UI.fmt(total)}</p></div>`;
                 const btn = `<button class="btn btn-ghost" onclick="document.querySelector('.modal-overlay')?.remove(); Cart.clear(); Cart.render(); UI.toggleCart(false); Router.go('pos');">Tutup</button><button class="btn btn-primary" onclick="Views.printOffline('${trx.id}')">🖨️ Cetak</button>`;
                 UI.modal('Selesai', html, btn);
             },
+
             printOffline(id) { const trx = DB.data.transactions.find(t => t.id === id); if(trx) this.print(trx); },
             
-            // --- ONLINE ---
             online() {
                 const prods = DB.data.products.filter(p=>p.type==='finished');
                 return `
-                    <div class="flex gap-3 mb-4 flex-col md:flex-row">
-                        <div class="card w-full flex flex-col items-center justify-center p-4" style="border: 1px dashed #25D366; background: #f0fdf4;">
-                            <h3 style="color:#128C7E; margin: 0 0 10px 0;">📱 WhatsApp Connect</h3>
-                            <button class="btn btn-wa w-full" onclick="window.open('https://web.whatsapp.com', '_blank', 'width=1000,height=800')">🚀 Buka WA Web</button>
-                        </div>
-                    </div>
-
                     <div class="pos-layout">
                         <div class="pos-products">
-                            <input type="text" class="form-control mb-4" placeholder="Cari produk..." onkeyup="Views.search('online', this.value)">
-                            <div class="pos-grid" id="wa-grid-container">
-                                ${prods.map(p=>`<div class="product" onclick='WACart.add(${JSON.stringify(p)})'><img src="https://picsum.photos/seed/wa_${p.id}/200/150" class="p-img"><div class="p-body"><div class="font-bold text-sm">${p.name}</div><div class="text-xs text-muted">Stok: ${p.stock}</div><div class="font-bold text-primary">${UI.fmt(p.price)}</div></div></div>`).join('')}
-                            </div>
+                            <input type="text" class="form-control mb-4" placeholder="Cari produk WA..." onkeyup="Views.search('online', this.value)">
+                            <div class="pos-grid" id="wa-grid-container">${prods.map(p=>`<div class="product" onclick='WACart.add(${JSON.stringify(p)})'><img src="https://picsum.photos/seed/wa_${p.id}/200/150" class="p-img"><div class="p-body"><div class="font-bold text-sm">${p.name}</div><div class="font-bold text-primary">${UI.fmt(p.price)}</div></div></div>`).join('')}</div>
                         </div>
                         <div class="cart-panel hidden" id="desktop-wa-cart-panel">
-                            <div class="p-3 border-bottom font-bold" style="border-bottom:1px solid var(--border);">Keranjang WA</div>
+                            <div class="p-3 border-bottom font-bold">Keranjang WA</div>
                             <div id="wa-cart-list" class="cart-list p-3"></div>
                             <div class="p-3" style="border-top:1px solid var(--border);">
                                 <div class="flex justify-between mb-3 items-center"><span class="font-bold">Total</span><span class="font-bold text-success" id="wa-cart-total">Rp 0</span></div>
@@ -603,16 +540,17 @@
                     </div>
                 `;
             },
+
             checkoutWA() {
                 if(WACart.items.length === 0) return UI.toast('Kosong!');
                 const total = WACart.total();
-                const html = `<div class="text-center mb-4"><div class="text-sm">Total Tagihan</div><div class="font-bold text-success" style="font-size:2rem">${UI.fmt(total)}</div></div><div class="form-group"><input type="text" id="wa-name" class="form-control" placeholder="Nama"></div></div><div class="form-group"><input type="number" id="wa-phone" class="form-control" placeholder="0812..."></div></div>`;
+                const html = `<div class="text-center mb-4"><div class="text-sm">Total Tagihan</div><div class="font-bold text-success" style="font-size:2rem">${UI.fmt(total)}</div></div><div class="form-group"><input type="text" id="wa-name" class="form-control" placeholder="Nama"></div><div class="form-group"><input type="number" id="wa-phone" class="form-control" placeholder="0812..."></div>`;
                 const btn = `<button class="btn btn-success w-full" onclick="Views.processWA('${total}')">Simpan</button>`;
-                UI.modal('Konfirmasi', html, btn);
+                UI.modal('Konfirmasi WA', html, btn);
             },
+
             processWA(total) {
-                const name = document.getElementById('wa-name').value;
-                let phone = document.getElementById('wa-phone').value;
+                const name = document.getElementById('wa-name').value; let phone = document.getElementById('wa-phone').value;
                 if(!name || !phone) return UI.toast('Lengkap!');
                 if(phone.startsWith('0')) phone = '62'+phone.substring(1);
                 const order = DB.addWAOrder(name, phone, WACart.items, parseFloat(total));
@@ -621,229 +559,178 @@
                 const btn = `<button class="btn btn-ghost" onclick="document.querySelector('.modal-overlay')?.remove(); WACart.clear(); WACart.render(); Router.go('online');">Tutup</button><button class="btn btn-primary" onclick="Views.printWA('${order.id}')">🖨️ Cetak</button>`;
                 UI.modal('Selesai', html, btn);
             },
+
             printWA(id) { const order = DB.data.waOrders.find(o => o.id === id); if(order) { const printObj = { id: order.id, total: order.total, items: order.items, method: 'online' }; this.print(printObj); } },
-            
-            // --- SUPPLY (ADMIN TABS) ---
-            supply() {
-                const today = new Date().toISOString().slice(0, 10);
-                const trxOffline = DB.data.transactions.filter(t => t.date.startsWith(today));
-                const trxOnline = DB.data.waOrders.filter(w => w.date.startsWith(today));
-                
-                let trHtml = '';
-                if(trxOffline.length === 0 && trxOnline.length === 0) {
-                    trHtml = '<tr><td colspan="4" class="text-center text-muted p-4">Belum ada transaksi hari ini.</td></tr>';
-                } else {
-                    trxOffline.forEach(t => {
-                        const itemsSummary = t.items.map(i=>i.name).join(', ').substring(0, 20) + (t.items.length>1 ? '...' : '');
-                        trHtml += `<tr><td class="text-xs">${new Date(t.date).toLocaleTimeString()}</td><td><span class="text-primary">OFFLINE</span></td><td>${itemsSummary}</td><td>${UI.fmt(t.total)}</td></tr>`;
-                    });
-                    trxOnline.forEach(w => {
-                        const itemsSummary = w.items.map(i=>i.name).join(', ').substring(0, 20) + (w.items.length>1 ? '...' : '');
-                        trHtml += `<tr><td class="text-xs">${new Date(w.date).toLocaleTimeString()}</td><td><span class="text-success">ONLINE (WA)</span></td><td>${itemsSummary}</td><td>${UI.fmt(w.total)}</td></tr>`;
-                    });
-                }
 
-                const raw = DB.data.products.filter(p=>p.type==='raw');
-                const rawOpts = raw.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+            // --- 1. NEW VIEW: SALES (RIWAYAT PENJUALAN) ---
+            sales() {
+                const todayStr = new Date().toISOString().slice(0, 10);
+                const stats = DB.getStats(todayStr);
+                const offline = DB.data.transactions;
+                const online = DB.data.waOrders;
                 
+                // Gabung dan Urutkan
+                let allSales = [
+                    ...offline.map(t => ({ ...t, source: 'OFFLINE' })),
+                    ...online.map(w => ({ ...w, source: 'ONLINE (WA)' }))
+                ].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+                const rows = allSales.map(s => `
+                    <tr>
+                        <td class="text-xs">${UI.fmtDateTime(s.date)}</td>
+                        <td><span class="badge ${s.source === 'OFFLINE' ? '' : 'text-success'}" style="background:${s.source === 'OFFLINE' ? '#e2e8f0' : '#dcfce7'}">${s.source}</span></td>
+                        <td><div class="font-bold">${s.customer || 'Customer'}</div><div class="text-xs text-muted">${s.items.map(i=>i.name).join(', ')}</div></td>
+                        <td class="font-bold text-right">${UI.fmt(s.total)}</td>
+                    </tr>
+                `).join('');
+
                 return `
-                    <div class="mb-4">
-                        <h3 style="margin:0;">🚚 Gudang & Keuangan</h3>
-                        <p class="text-sm text-muted">Manajemen Stok, Biaya Operasional, dan Transaksi</p>
+                    <div class="card mb-4" style="background:var(--primary); color:white;">
+                        <h3 style="margin:0 0 10px 0;">Ringkasan Penjualan Hari Ini</h3>
+                        <div class="flex justify-between items-center">
+                            <div><small>Offline</small><div class="font-bold">${UI.fmt(stats.revenueOffline)}</div></div>
+                            <div><small>Online (WA)</small><div class="font-bold text-success">${UI.fmt(stats.revenueOnline)}</div></div>
+                            <div style="text-align:right;"><small>Total Harian</small><div class="font-bold" style="font-size:1.4rem;">${UI.fmt(stats.revenue)}</div></div>
+                        </div>
                     </div>
-                    
-                    <!-- TABS -->
-                    <div class="tabs">
-                        <button class="tab-btn active" onclick="UI.switchTab('trx')">1. Riwayat Transaksi</button>
-                        <button class="tab-btn" onclick="UI.switchTab('buy')">2. Pembelian & Stok</button>
-                        <button class="tab-btn" onclick="UI.switchTab('exp')">3. Pengeluaran Ops</button>
-                    </div>
-
-                    <!-- CONTENT 1: RIWAYAT HARIAN -->
-                    <div id="tab-trx" class="tab-content active">
-                        <div class="card">
-                            <h4 class="text-muted mb-4">Daftar Penjualan Hari Ini (Offline & Online)</h4>
+                    <div class="card">
+                        <h3 class="mb-4">Log Transaksi Masuk</h3>
+                        <div style="overflow-x:auto;">
                             <table>
-                                <thead><tr><th>Waktu</th><th>Tipe</th><th>Detail</th><th>Total</th></tr></thead>
-                                <tbody id="daily-trx-list">
-                                    ${trHtml}
-                                </tbody>
+                                <thead><tr><th>Waktu</th><th>Sumber</th><th>Detail</th><th class="text-right">Total</th></tr></thead>
+                                <tbody>${rows || '<tr><td colspan="4" class="text-center p-4">Belum ada data</td></tr>'}</tbody>
                             </table>
                         </div>
                     </div>
+                `;
+            },
 
-                    <!-- CONTENT 2: PEMBELIAN & STOK -->
-                    <div id="tab-buy" class="tab-content">
-                        <div class="card" style="border-left:4px solid var(--accent);">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3>2. Input Stok & Pembelian</h3>
-                                <div class="flex gap-2">
-                                    <button class="btn btn-primary" style="background:var(--primary-light); color:var(--primary);" onclick="Views.toggleStockForm('stock')">+ Restock Barang Lama</button>
-                                    <button class="btn btn-success" onclick="Views.toggleStockForm('new')">+ Barang Baru</button>
-                                </div>
-                            </div>
-                            
-                            <!-- Form Restock (Default Visible) -->
-                            <div id="form-stock-container" class="mb-4">
-                                <div class="form-group"><label class="text-xs text-muted">Pilih Barang (Existing)</label><select id="pur-id" class="form-control">${rawOpts}</select></div>
-                                <div class="flex gap-2">
-                                    <div class="form-group flex-1"><label class="text-xs text-muted">Jumlah Tambahan (Qty)</label><input type="number" id="pur-qty" class="form-control" placeholder="Masukkan jumlah..." style="font-weight:bold;"></div>
-                                    <div class="form-group flex-1"><label class="text-xs text-muted">Total Biaya Beli</label><input type="number" id="pur-cost" class="form-control" placeholder="Rp ..." style="font-weight:bold;"></div>
-                                </div>
-                            </div>
-                            
-                            <!-- Form New Product (Hidden by default) -->
-                            <div id="form-new-container" class="hidden" style="background:var(--primary-light); padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid var(--border);">
-                                <h4 class="text-sm text-primary mb-3">Input Data Barang Baru (Masuk ke Inventori)</h4>
-                                <div class="flex gap-2 mb-4 flex-col md:flex-row">
-                                    <div class="form-group flex-1"><label class="text-xs text-muted">Nama Barang</label><input type="text" id="new-prod-name" class="form-control" placeholder="Nama Barang"></div>
-                                    <div class="form-group flex-1"><label class="text-xs text-muted">HPP Dasar (Modal)</label><input type="number" id="new-prod-hpp" class="form-control" placeholder="Modal Satuan"></div>
-                                    <div class="form-group flex-1"><label class="text-xs text-muted">Jumlah Beli (Stok Awal)</label><input type="number" id="new-prod-stock" class="form-control" placeholder="Jumlah Beli"></div>
-                                    <div class="form-group flex-1"><label class="text-xs text-muted">Total Bayar</label><input type="number" id="new-prod-cost" class="form-control" placeholder="Total Beli"></div>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary w-full" onclick="Views.submitStock()">SIMPAN (Update Inventori & Catat Beban)</button>
+            // --- 2. NEW VIEW: EXPENSES (RIWAYAT PENGELUARAN) ---
+            expenses() {
+                const todayStr = new Date().toISOString().slice(0, 10);
+                const dailyExp = DB.data.purchases.filter(p => p.date.startsWith(todayStr)).reduce((s,p) => s+p.total, 0);
+                const allExp = DB.data.purchases.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+                const rows = allExp.map(e => `
+                    <tr>
+                        <td class="text-xs">${UI.fmtDateTime(e.date)}</td>
+                        <td><span class="badge" style="background:${e.type==='misc'?'#fef3c7':'#dbeafe'}">${e.type === 'misc' ? 'Ops/Misc' : 'Stok/Gudang'}</span></td>
+                        <td><div class="font-bold">${e.name || 'Beli Stok'}</div><div class="text-xs text-muted">${e.qty ? 'Qty: '+e.qty : 'Biaya Umum'}</div></td>
+                        <td class="font-bold text-danger text-right">${UI.fmt(e.total)}</td>
+                    </tr>
+                `).join('');
+
+                return `
+                    <div class="card mb-4" style="border-left:4px solid var(--danger);">
+                        <small class="text-muted">Total Pengeluaran Hari Ini</small>
+                        <h2 class="text-danger" style="margin:5px 0 0 0;">${UI.fmt(dailyExp)}</h2>
+                    </div>
+                    <div class="card">
+                        <h3 class="mb-4">Log Pengeluaran (Belanja & Ops)</h3>
+                        <div style="overflow-x:auto;">
+                            <table>
+                                <thead><tr><th>Waktu</th><th>Kategori</th><th>Keterangan</th><th class="text-right">Jumlah</th></tr></thead>
+                                <tbody>${rows || '<tr><td colspan="4" class="text-center p-4">Belum ada data</td></tr>'}</tbody>
+                            </table>
                         </div>
                     </div>
+                `;
+            },
 
-                    <!-- CONTENT 3: PENGELUARAN -->
+            supply() {
+                const raw = DB.data.products.filter(p=>p.type==='raw');
+                const rawOpts = raw.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+                return `
+                    <div class="mb-4"><h3>🚚 Gudang & Keuangan</h3><p class="text-sm text-muted">Input stok dan pengeluaran</p></div>
+                    <div class="tabs">
+                        <button class="tab-btn active" onclick="UI.switchTab('buy')">Pembelian Stok</button>
+                        <button class="tab-btn" onclick="UI.switchTab('exp')">Biaya Operasional</button>
+                    </div>
+                    <div id="tab-buy" class="tab-content active">
+                        <div class="card">
+                            <div class="flex justify-between mb-4"><h4>Input Stok</h4><div class="flex gap-2"><button class="btn btn-ghost" onclick="Views.toggleStockForm('stock')">Barang Lama</button><button class="btn btn-primary" onclick="Views.toggleStockForm('new')">+ Barang Baru</button></div></div>
+                            <div id="form-stock-container"><div class="form-group"><label class="label">Pilih Barang</label><select id="pur-id" class="form-control">${rawOpts}</select></div><div class="flex gap-2"><div class="form-group flex-1"><label class="label">Qty</label><input type="number" id="pur-qty" class="form-control"></div><div class="form-group flex-1"><label class="label">Total Biaya</label><input type="number" id="pur-cost" class="form-control"></div></div></div>
+                            <div id="form-new-container" class="hidden"><div class="form-group"><label class="label">Nama Barang Baru</label><input type="text" id="new-prod-name" class="form-control"></div><div class="flex gap-2"><div class="form-group flex-1"><label class="label">Modal (HPP)</label><input type="number" id="new-prod-hpp" class="form-control"></div><div class="form-group flex-1"><label class="label">Stok Awal</label><input type="number" id="new-prod-stock" class="form-control"></div><div class="form-group flex-1"><label class="label">Total Bayar</label><input type="number" id="new-prod-cost" class="form-control"></div></div></div>
+                            <button class="btn btn-primary w-full mt-4" onclick="Views.submitStock()">SIMPAN DATA</button>
+                        </div>
+                    </div>
                     <div id="tab-exp" class="tab-content">
                         <div class="card" style="border-left:4px solid var(--warning);">
-                            <h3>3. Biaya Operasional</h3>
-                            <p class="text-sm text-muted mb-4">Biaya yang tidak menambah stok (Gaji, Listrik, Air, dll)</p>
-                            <div class="flex gap-2 mb-4 flex-col">
-                                <div class="form-group flex-1"><input type="text" id="misc-name" class="form-control" placeholder="Nama (Listrik, dll)"></div></div>
-                                <div class="form-group flex-1"><input type="number" id="misc-cost" class="form-control" placeholder="Biaya"></div></div>
-                            </div>
-                            <button class="btn btn-danger w-full" onclick="Views.submitMisc()">Catat Beban</button>
+                            <h4>Biaya Lain-lain (Ops)</h4>
+                            <div class="form-group"><label class="label">Keterangan (Gaji, Listrik, dll)</label><input type="text" id="misc-name" class="form-control"></div>
+                            <div class="form-group"><label class="label">Besar Biaya</label><input type="number" id="misc-cost" class="form-control"></div>
+                            <button class="btn btn-danger w-full" onclick="Views.submitMisc()">CATAT PENGELUARAN</button>
                         </div>
                     </div>
                 `;
             },
             
             toggleStockForm(mode) {
-                const fStock = document.getElementById('form-stock-container');
-                const fNew = document.getElementById('form-new-container');
-                if(mode === 'new') {
-                    fStock.classList.add('hidden');
-                    fNew.classList.remove('hidden');
-                } else {
-                    fStock.classList.remove('hidden');
-                    fNew.classList.add('hidden');
-                }
+                const fStock = document.getElementById('form-stock-container'), fNew = document.getElementById('form-new-container');
+                if(mode === 'new') { fStock.classList.add('hidden'); fNew.classList.remove('hidden'); } else { fStock.classList.remove('hidden'); fNew.classList.add('hidden'); }
             },
-            
-            renderDailyTrx() {
-                const today = new Date().toISOString().slice(0, 10);
-                const trxOffline = DB.data.transactions.filter(t => t.date.startsWith(today));
-                const trxOnline = DB.data.waOrders.filter(w => w.date.startsWith(today));
-                const tbody = document.getElementById('daily-trx-list');
-                if(!tbody) return;
 
-                let html = '';
-                if(trxOffline.length === 0 && trxOnline.length === 0) {
-                    html = '<tr><td colspan="4" class="text-center text-muted p-4">Belum ada transaksi hari ini.</td></tr>';
-                } else {
-                    trxOffline.forEach(t => {
-                        const itemsSummary = t.items.map(i=>i.name).join(', ').substring(0, 20) + (t.items.length>1 ? '...' : '');
-                        html += `<tr><td class="text-xs">${new Date(t.date).toLocaleTimeString()}</td><td><span class="text-primary">OFFLINE</span></td><td>${itemsSummary}</td><td>${UI.fmt(t.total)}</td></tr>`;
-                    });
-                    trxOnline.forEach(w => {
-                        const itemsSummary = w.items.map(i=>i.name).join(', ').substring(0, 20) + (w.items.length>1 ? '...' : '');
-                        html += `<tr><td class="text-xs">${new Date(w.date).toLocaleTimeString()}</td><td><span class="text-success">ONLINE (WA)</span></td><td>${itemsSummary}</td><td>${UI.fmt(w.total)}</td></tr>`;
-                    });
-                }
-                tbody.innerHTML = html;
-            },
-            
             submitStock() {
-                const fNewVisible = !document.getElementById('form-new-container').classList.contains('hidden');
-                const isNew = fNewVisible;
-
+                const isNew = !document.getElementById('form-new-container').classList.contains('hidden');
                 if(isNew) {
-                    const name = document.getElementById('new-prod-name').value;
-                    const hpp = parseFloat(document.getElementById('new-prod-hpp').value) || 0;
-                    const stock = parseInt(document.getElementById('new-prod-stock').value);
-                    const cost = parseFloat(document.getElementById('new-prod-cost').value);
-                    const id = Date.now().toString();
-                    
-                    if(!name || !stock) return UI.toast('Nama & Stok wajib!');
-                    
-                    DB.addPurchase('new', { productId: id, name, hpp, qty: stock, total: cost });
-                    UI.toast('Barang Baru Ditambahkan ke Inventori & Stok Bertambah!');
+                    const name = document.getElementById('new-prod-name').value, hpp = parseFloat(document.getElementById('new-prod-hpp').value), stock = parseInt(document.getElementById('new-prod-stock').value), cost = parseFloat(document.getElementById('new-prod-cost').value);
+                    if(!name || !stock) return UI.toast('Lengkap!');
+                    DB.addPurchase('new', { productId: Date.now(), name, hpp, qty: stock, total: cost });
                 } else {
-                    const id = document.getElementById('pur-id').value;
-                    const q = parseInt(document.getElementById('pur-qty').value);
-                    const c = parseFloat(document.getElementById('pur-cost').value);
-
-                    if(!q || !c) return UI.toast('Isi lengkap!'); 
-                    
-                    DB.addPurchase('stock', { productId:id, qty: q, total: c });
-                    UI.toast('Stok Berhasil Ditambahkan di Inventori & Beban Tercatat!');
+                    const id = document.getElementById('pur-id').value, q = parseInt(document.getElementById('pur-qty').value), c = parseFloat(document.getElementById('pur-cost').value);
+                    const prod = DB.data.products.find(p => p.id == id);
+                    if(!q || !c) return UI.toast('Lengkap!');
+                    DB.addPurchase('stock', { productId: id, name: prod?prod.name:'Stok', qty: q, total: c });
                 }
-                Router.go('supply');
+                UI.toast('Data Tersimpan & Stok Berubah!'); Router.go('supply');
             },
+
             submitMisc() {
                 const n=document.getElementById('misc-name').value, c=parseFloat(document.getElementById('misc-cost').value); 
-                if(!n||!c) return UI.toast('Isi lengkap!'); 
-                DB.addPurchase('misc', {name:n, total:c}); 
-                UI.toast('Beban Tercatat!'); 
+                if(!n||!c) return UI.toast('Lengkap!'); 
+                DB.addPurchase('misc', {name:n, total:c}); UI.toast('Biaya Tercatat!'); Router.go('supply');
             },
 
             finance() {
                 const s = DB.getStats(null);
-                return `<div class="card"><h3>Laporan Laba & Rugi (Terintegrasi)</h3><div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">Perhitungan: Pendapatan - HPP Terjual - Semua Beban</div><table style="width:100%">
-                        <tr><td>Pendapatan (Offline + WA)</td><td class="text-right font-bold">${UI.fmt(s.revenue)}</td></tr>
-                        <tr><td style="padding-left:20px">(-) HPP Barang Terjual</td><td class="text-right text-danger">(${UI.fmt(s.cogs)})</td></tr>
+                return `<div class="card"><h3>Laporan Laba & Rugi</h3><table style="width:100%">
+                        <tr><td>Pendapatan</td><td class="text-right font-bold">${UI.fmt(s.revenue)}</td></tr>
+                        <tr><td style="padding-left:20px">(-) HPP Terjual</td><td class="text-right text-danger">(${UI.fmt(s.cogs)})</td></tr>
                         <tr style="background:#f1f5f9"><td><b>Laba Kotor</b></td><td class="text-right font-bold">${UI.fmt(s.gross)}</td></tr>
-                        <tr><td style="padding-left:20px">(-) Total Beban</td><td class="text-right text-danger">(${UI.fmt(s.expense)})</td></tr>
+                        <tr><td style="padding-left:20px">(-) Total Pengeluaran (Ops/Stok)</td><td class="text-right text-danger">(${UI.fmt(s.expense)})</td></tr>
                         <tr style="background:#dcfce7"><td><b>Laba Bersih</b></td><td class="text-right font-bold text-success">${UI.fmt(s.net)}</td></tr>
                     </table></div>`;
             },
             
-            // --- INVENTORY (V27: RESTORED) ---
             inventory() {
-                // Pastikan ambil data fresh
-                const products = DB.data.products;
-                const rows = products.map(p=>`<tr><td>${p.name}</td><td class="${p.stock<10?'text-danger font-bold':''}">${p.stock}</td><td>${UI.fmt(p.hpp)}</td><td>${UI.fmt(p.stock*p.hpp)}</td></tr>`).join('');
-                return `<div class="card"><h3>Inventori</h3><table><thead><tr><th>Nama</th><th>Stok</th><th>HPP Dasar</th><th>Nilai Aset</th></tr></thead><tbody id="inv-table-body">${rows}</tbody></table></div>`;
+                const rows = DB.data.products.map(p=>`<tr><td>${p.name}</td><td class="${p.stock<10?'text-danger font-bold':''}">${p.stock}</td><td>${UI.fmt(p.hpp)}</td><td>${UI.fmt(p.stock*p.hpp)}</td></tr>`).join('');
+                return `<div class="card"><h3>Inventori</h3><table><thead><tr><th>Nama</th><th>Stok</th><th>HPP</th><th>Aset</th></tr></thead><tbody>${rows}</tbody></table></div>`;
             },
             
-            // --- EMPLOYEES (V27: FIXED DUPLICATION) ---
             employees() {
-                // Build HTML langsung berisi data
-                const rows = DB.data.employees.map(e => `<tr><td class="font-bold">${e.name}</td><td><span style="background:${e.role==='admin'?'#e0e7ff':'#f1f5f9'}; color:${e.role==='admin'?'#2563eb':'#64748b'}; padding:4px 8px; border-radius:4px; font-size:0.75rem;">${e.role==='admin'?'Owner':'Kasir'}</span></td><td>${Login.user && Login.user.pin === e.pin ? '' : `<button class="btn btn-danger" style="padding:4px 8px; font-size:0.8rem;" onclick="Views.deleteEmployee('${e.pin}')">Hapus</button>`}</td></tr>`).join('');
+                const rows = DB.data.employees.map(e => `<tr><td>${e.name}</td><td>${e.role}</td><td>${Login.user?.pin === e.pin ? '' : `<button class="btn btn-danger" onclick="Views.deleteEmployee('${e.pin}')">Hapus</button>`}</td></tr>`).join('');
                 return `
-                    <div class="flex flex-col gap-3">
-                        <div class="card"><h3>Tambah Anggota</h3><div class="flex gap-2 mb-4 flex-col md:flex-row"><input type="text" id="emp-name" class="form-control" placeholder="Nama"></div><select id="emp-role" class="form-control"><option value="cashier">Kasir</option><option value="admin">Owner</option></select></div><div class="form-group mb-4"><input type="number" id="emp-pin" class="form-control" placeholder="PIN (4 digit)" maxlength="4"></div><button class="btn btn-primary w-full" onclick="Views.addEmployee()">Simpan</button></div>
-                        <div class="card"><h3>Daftar Tim</h3><table><thead><tr><th>Nama</th><th>Role</th><th>Aksi</th></tr></thead><tbody id="emp-table-body">${rows}</tbody></table></div>
-                        <div class="card" style="border: 1px solid var(--danger);"><h3 class="text-danger">Zona Bahaya</h3><button class="btn btn-danger w-full" onclick="if(confirm('Reset data?')) { localStorage.removeItem('umkm_erp_v27'); location.reload(); }">Reset Pabrik</button></div>
-                    </div>
+                    <div class="card mb-4"><h3>Tambah Karyawan</h3><div class="form-group"><input type="text" id="emp-name" class="form-control" placeholder="Nama"></div><div class="form-group"><input type="number" id="emp-pin" class="form-control" placeholder="PIN 4 Digit"></div><div class="form-group"><select id="emp-role" class="form-control"><option value="cashier">Kasir</option><option value="admin">Owner</option></select></div><button class="btn btn-primary w-full" onclick="Views.addEmployee()">Simpan</button></div>
+                    <div class="card"><h3>Daftar Tim</h3><table><thead><tr><th>Nama</th><th>Role</th><th>Aksi</th></tr></thead><tbody>${rows}</tbody></table></div>
+                    <div class="card mt-4"><button class="btn btn-danger w-full" onclick="if(confirm('Reset semua data?')){localStorage.removeItem('umkm_erp_v28');location.reload();}">RESET TOTAL SISTEM</button></div>
                 `;
             },
-            addEmployee() {
-                const name = document.getElementById('emp-name').value, role = document.getElementById('emp-role').value, pin = document.getElementById('emp-pin').value;
-                if(!name || !pin) return UI.toast('Nama & PIN wajib!');
-                if(pin.length !== 4 || isNaN(pin)) return UI.toast('PIN 4 digit!');
-                const result = DB.addEmployee(name, pin, role);
-                if(result.success) { UI.toast(result.msg); document.getElementById('emp-name').value=''; document.getElementById('emp-pin').value=''; this.employees(); } else UI.toast(result.msg);
-            },
-            deleteEmployee(pin) {
-                if(confirm('Hapus?')) { const result = DB.deleteEmployee(pin); UI.toast(result.msg); if(result.success) this.employees(); }
-            },
 
-            // --- SEARCH ---
+            addEmployee() {
+                const name = document.getElementById('emp-name').value, pin = document.getElementById('emp-pin').value, role = document.getElementById('emp-role').value;
+                if(!name || pin.length !== 4) return UI.toast('Nama & PIN 4 Digit!');
+                const res = DB.addEmployee(name, pin, role); UI.toast(res.msg); if(res.success) Router.go('employees');
+            },
+            deleteEmployee(pin) { if(confirm('Hapus?')){ DB.deleteEmployee(pin); Router.go('employees'); } },
+
             search(type, q) {
-                const grid = document.querySelector('#content .pos-grid:visible');
-                if(grid) {
-                    const fn = type === 'pos' ? 'Cart.add' : 'WACart.add';
-                    const seed = type === 'pos' ? p.id : `wa_${p.id}`;
-                    const products = DB.data.products.filter(p=>p.type==='finished' && p.name.toLowerCase().includes(q.toLowerCase()));
-                    grid.innerHTML = products.map(p=>`<div class="product" onclick='${fn}(${JSON.stringify(p)})'><img src="https://picsum.photos/seed/${seed}/200/150" class="p-img"><div class="p-body"><div class="font-bold text-sm">${p.name}</div><div class="font-bold text-primary">${UI.fmt(p.price)}</div></div></div>`).join('');
-                }
+                const gridId = type === 'pos' ? 'pos-grid-container' : 'wa-grid-container';
+                const grid = document.getElementById(gridId);
+                const fn = type === 'pos' ? 'Cart.add' : 'WACart.add';
+                const products = DB.data.products.filter(p=>p.type==='finished' && p.name.toLowerCase().includes(q.toLowerCase()));
+                grid.innerHTML = products.map(p=>`<div class="product" onclick='${fn}(${JSON.stringify(p)})'><img src="https://picsum.photos/seed/${p.id}/200/150" class="p-img"><div class="p-body"><div class="font-bold text-sm">${p.name}</div><div class="font-bold text-primary">${UI.fmt(p.price)}</div></div></div>`).join('');
             },
             
-            // --- PRINT ---
             print(data) {
                 document.getElementById('r-shop-name').innerText = APP_SETTINGS.shopName;
                 document.getElementById('r-shop-addr').innerText = APP_SETTINGS.shopAddress;
@@ -852,58 +739,32 @@
                 document.getElementById('r-bill-no').innerText = data.id;
                 document.getElementById('r-cashier').innerText = Login.user ? Login.user.name : 'Admin';
                 document.getElementById('r-type').innerText = data.method === 'online' ? 'ONLINE (WhatsApp)' : 'OFFLINE (Toko)';
-                const methodMap = { 'cash': 'TUNAI', 'transfer': 'TRANSFER', 'online': 'ONLINE' };
-                document.getElementById('r-method').innerText = methodMap[data.method] || 'CASH';
-                const items = data.items || [{ name: data.msg || "Order", qty: 1, price: data.total }];
-                document.getElementById('r-items').innerHTML = items.map(i => `<div style="display:flex;justify-content:space-between; margin-bottom:2px;"><span style="width:60%;">${i.name} x${i.qty}</span><span style="width:40%; text-align:right;">${UI.fmt(i.price*i.qty)}</span></div>`).join('');
+                document.getElementById('r-method').innerText = (data.method || 'cash').toUpperCase();
+                document.getElementById('r-items').innerHTML = data.items.map(i => `<div style="display:flex;justify-content:space-between; margin-bottom:2px;"><span style="width:60%;">${i.name} x${i.qty}</span><span style="width:40%; text-align:right;">${UI.fmt(i.price*i.qty)}</span></div>`).join('');
                 document.getElementById('r-total').innerText = UI.fmt(data.total);
-                const rowPay = document.getElementById('row-pay'), rowChange = document.getElementById('row-change');
-                if(data.method === 'cash') {
-                    rowPay.style.display = 'table-row'; rowChange.style.display = 'table-row';
-                    document.getElementById('r-pay').innerText = UI.fmt(data.pay);
-                    document.getElementById('r-change').innerText = UI.fmt(data.change);
-                } else {
-                    rowPay.style.display = 'none'; rowChange.style.display = 'none';
-                }
+                const rP = document.getElementById('row-pay'), rC = document.getElementById('row-change');
+                if(data.method === 'cash') { rP.style.display='table-row'; rC.style.display='table-row'; document.getElementById('r-pay').innerText=UI.fmt(data.pay); document.getElementById('r-change').innerText=UI.fmt(data.change); }
+                else { rP.style.display='none'; rC.style.display='none'; }
                 window.print();
-                setTimeout(()=>{ document.querySelector('.modal-overlay')?.remove(); }, 500);
             }
         };
 
         /* --- 7. ROUTER --- */
         const Router = {
             go(view) {
-                // Security
-                if(Login.user?.role === 'cashier' && ['finance','supply','employees','dashboard','inventory'].includes(view)) return UI.toast('Akses Ditolak');
+                const isAdminOnly = ['dashboard', 'finance', 'inventory', 'employees', 'sales', 'expenses'].includes(view);
+                if(Login.user?.role === 'cashier' && isAdminOnly) return UI.toast('Akses Ditolak');
                 
-                // Navigation Highlight
                 document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
                 const navItem = document.getElementById('nav-'+view);
                 if(navItem) navItem.classList.add('active');
                 
-                document.getElementById('page-title').textContent = view.toUpperCase();
-
-                // --- INJECT HTML ---
+                document.getElementById('page-title').textContent = view.toUpperCase().replace('-', ' ');
                 const viewEl = document.getElementById('content');
-                
-                // CRITICAL CHECK: Pastikan fungsi ada
-                if(Views[view]) {
-                    viewEl.innerHTML = Views[view]();
-                } else {
-                    viewEl.innerHTML = `<div class="text-center p-4 text-muted">Halaman sedang dikembangkan...</div>`;
-                    console.error("View tidak ditemukan: " + view);
-                }
+                if(Views[view]) viewEl.innerHTML = Views[view]();
 
-                // --- LOGIC SETELANAH INJECT ---
-                if (view === 'supply') {
-                    Views.toggleStockForm('stock');
-                }
-
-                // --- CART VISIBILITY LOGIC ---
-                const fab = document.getElementById('fab-cart');
-                const dCart = document.getElementById('desktop-cart-panel');
-                const dwaCart = document.getElementById('desktop-wa-cart-panel');
-                
+                // Responsive Cart Logic
+                const fab = document.getElementById('fab-cart'), dCart = document.getElementById('desktop-cart-panel'), dwaCart = document.getElementById('desktop-wa-cart-panel');
                 if (window.innerWidth >= 1024) {
                     if(fab) fab.style.display = 'none';
                     if(view === 'pos' && dCart) dCart.classList.remove('hidden');
@@ -913,8 +774,7 @@
                     if(dCart) dCart.classList.add('hidden');
                     if(dwaCart) dwaCart.classList.add('hidden');
                 }
-                if(view === 'pos') Cart.render();
-                if(view === 'online') WACart.render();
+                if(view === 'pos') Cart.render(); if(view === 'online') WACart.render();
             }
         };
 
@@ -925,10 +785,6 @@
             const loader = document.getElementById('loading-screen');
             loader.style.opacity = '0';
             setTimeout(() => { loader.style.display='none'; document.getElementById('login-screen').style.display='flex'; }, 500);
-        };
-        window.onresize = () => {
-            const currentView = document.querySelector('.nav-item.active')?.id.replace('nav-','');
-            if(currentView === 'pos' || currentView === 'online') Router.go(currentView);
         };
     </script>
 </body>
