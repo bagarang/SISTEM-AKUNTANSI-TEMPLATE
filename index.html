@@ -147,7 +147,7 @@
                 if(store) this.data = JSON.parse(store);
                 else {
                     // Seed Data Default
-                    this.data.products = [ 
+                    this.data.products = [ 
                         { id:101, name:'Beras', price:0, hpp:12000, stock:50, type:'raw' },
                         { id:102, name:'Teh Kering', price:0, hpp:5000, stock:20, type:'raw' },
                         { id:103, name:'Gula Pasir', price:0, hpp:15000, stock:10, type:'raw' },
@@ -223,8 +223,8 @@
             update() { document.getElementById('pin-display').textContent='•'.repeat(this.pin.length); },
             submit() {
                 const u = DB.data.employees.find(e=>e.pin===this.pin);
-                if(u) { 
-                    this.user=u; document.getElementById('login-screen').style.display='none'; document.getElementById('app-main').style.display='flex'; 
+                if(u) { 
+                    this.user=u; document.getElementById('login-screen').style.display='none'; document.getElementById('app-main').style.display='flex'; 
                     if(u.role === 'admin') document.querySelectorAll('.nav-item.hidden').forEach(el=>el.classList.remove('hidden'));
                     Router.go(u.role==='admin'?'dashboard':'pos');
                 } else { UI.toast('PIN Salah!'); this.clear(); }
@@ -255,11 +255,12 @@
                 document.body.appendChild(m);
                 m.onclick = e => { if(e.target===m) m.remove(); };
             },
-            switchTab(tab) {
+            // FIXED switchTab function to accept explicit element reference
+            switchTab(tab, el) {
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 document.getElementById('tab-' + tab).classList.remove('hidden');
-                event.currentTarget.classList.add('active');
+                if (el) el.classList.add('active');
             }
         };
 
@@ -381,10 +382,10 @@
                 const nonProd = DB.data.products.filter(p=>p.type==='non-prod');
                 return `
                 <div class="flex gap-2 mb-4">
-                    <button class="tab-btn active" onclick="UI.switchTab('inv-list-prod')">Daftar Stok Produksi</button>
-                    <button class="tab-btn" onclick="UI.switchTab('inv-non-prod')">Barang Non Produksi</button>
-                    <button class="tab-btn" onclick="UI.switchTab('inv-update')">Update Manual</button>
-                    <button class="tab-btn" onclick="UI.switchTab('inv-csv')">Import CSV</button>
+                    <button class="tab-btn active" onclick="UI.switchTab('inv-list-prod', this)">Daftar Stok Produksi</button>
+                    <button class="tab-btn" onclick="UI.switchTab('inv-non-prod', this)">Barang Non Produksi</button>
+                    <button class="tab-btn" onclick="UI.switchTab('inv-update', this)">Update Manual</button>
+                    <button class="tab-btn" onclick="UI.switchTab('inv-csv', this)">Import CSV</button>
                 </div>
                 <div id="tab-inv-list-prod" class="tab-content">
                     <div class="card"><table><thead><tr><th>Bahan Baku</th><th>Stok (gram)</th><th>Nilai Aset</th></tr></thead><tbody>${raw.map(p=>`<tr><td>${p.name}</td><td>${p.stock.toFixed(2)}</td><td>${UI.fmt(p.stock*p.hpp)}</td></tr>`).join('')}</tbody></table></div>
@@ -455,7 +456,10 @@
             },
             expenses() {
                 return `
-                <div class="flex gap-2 mb-4"><button class="tab-btn active" onclick="UI.switchTab('exp-recipe')">Log Pengeluaran By Resep</button><button class="tab-btn" onclick="UI.switchTab('exp-non-prod')">Log Pengeluaran Non Produksi</button></div>
+                <div class="flex gap-2 mb-4">
+                    <button class="tab-btn active" onclick="UI.switchTab('exp-recipe', this)">Log Pengeluaran By Resep</button>
+                    <button class="tab-btn" onclick="UI.switchTab('exp-non-prod', this)">Log Pengeluaran Non Produksi</button>
+                </div>
                 <div id="tab-exp-recipe" class="tab-content">
                     <div class="card"><h3>Log HPP (Resep dari Penjualan)</h3><div class="table-responsive"><table><thead><tr><th>Waktu</th><th>Deskripsi</th><th align="right">HPP</th></tr></thead><tbody>
                         ${DB.data.transactions.map(t => `<tr><td>${UI.fmtDT(t.date)}</td><td>Modal Resep Transaksi ${t.id}</td><td align="right" style="color:red">${UI.fmt(t.items.reduce((a,i)=>a+(i.hpp*i.qty),0))}</td></tr>`).join('')}
