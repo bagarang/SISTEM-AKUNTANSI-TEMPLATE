@@ -72,11 +72,6 @@
             #thermal-receipt, #thermal-receipt * { visibility: visible !important; }
             #thermal-receipt { position: absolute; left: 0; top: 0; width: 58mm; display: block !important; padding: 5mm; background: white; color: black; font-family: 'Roboto Mono', monospace; font-size: 10px; }
         }
-        @media (max-width: 1024px) {
-            .cart-panel { display: none; }
-            aside { position: fixed; transform: translateX(-100%); height: 100%; width: 260px; }
-            aside.open { transform: translateX(0); }
-        }
     </style>
 </head>
 <body>
@@ -146,7 +141,6 @@
                 const store = localStorage.getItem('umkm_erp_v47');
                 if(store) this.data = JSON.parse(store);
                 else {
-                    // Seed Data Default
                     this.data.products = [ 
                         { id:101, name:'Beras', price:0, hpp:12000, stock:50, type:'raw' },
                         { id:102, name:'Teh Kering', price:0, hpp:5000, stock:20, type:'raw' },
@@ -175,7 +169,6 @@
                 this.save(); return ord;
             },
             processStockAndExpense(items, npUsed) {
-                // 1. Kurangi Bahan Baku
                 items.forEach(sold => {
                     const p = this.data.products.find(x => x.id === sold.id);
                     if (p && p.recipe) {
@@ -185,18 +178,11 @@
                         });
                     }
                 });
-                // 2. Kurangi Non-Prod & Catat Biaya Satuan ke Log
                 npUsed.forEach(id => {
                     const np = this.data.products.find(x => x.id == id);
                     if (np) {
                         np.stock -= 1;
-                        this.data.purchases.unshift({ 
-                            date: new Date().toISOString(), 
-                            type: 'non-prod-usage', 
-                            name: np.name, 
-                            total: np.hpp, 
-                            isUsage: true 
-                        });
+                        this.data.purchases.unshift({ date: new Date().toISOString(), type: 'non-prod-usage', name: np.name, total: np.hpp, isUsage: true });
                     }
                 });
             },
@@ -255,12 +241,13 @@
                 document.body.appendChild(m);
                 m.onclick = e => { if(e.target===m) m.remove(); };
             },
-            // FIX: Added 'el' parameter to avoid reliance on global 'event'
+            /* FIXED: Ditambahkan parameter 'el' untuk referensi elemen eksplisit */
             switchTab(tab, el) {
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.getElementById('tab-' + tab).classList.remove('hidden');
-                if (el) el.classList.add('active'); // Use explicit element reference
+                const target = document.getElementById('tab-' + tab);
+                if (target) target.classList.remove('hidden');
+                if (el) el.classList.add('active'); /* Menggunakan elemen yang diklik, bukan global event */
             }
         };
 
@@ -382,6 +369,7 @@
                 const nonProd = DB.data.products.filter(p=>p.type==='non-prod');
                 return `
                 <div class="flex gap-2 mb-4">
+                    /* FIXED: Melewatkan 'this' ke switchTab */
                     <button class="tab-btn active" onclick="UI.switchTab('inv-list-prod', this)">Daftar Stok Produksi</button>
                     <button class="tab-btn" onclick="UI.switchTab('inv-non-prod', this)">Barang Non Produksi</button>
                     <button class="tab-btn" onclick="UI.switchTab('inv-update', this)">Update Manual</button>
@@ -457,6 +445,7 @@
             expenses() {
                 return `
                 <div class="flex gap-2 mb-4">
+                    /* FIXED: Melewatkan 'this' ke switchTab */
                     <button class="tab-btn active" onclick="UI.switchTab('exp-recipe', this)">Log Pengeluaran By Resep</button>
                     <button class="tab-btn" onclick="UI.switchTab('exp-non-prod', this)">Log Pengeluaran Non Produksi</button>
                 </div>
