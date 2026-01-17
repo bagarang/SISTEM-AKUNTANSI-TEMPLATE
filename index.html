@@ -146,6 +146,7 @@
                 const store = localStorage.getItem('umkm_erp_v47');
                 if(store) this.data = JSON.parse(store);
                 else {
+                    // Seed Data Default
                     this.data.products = [ 
                         { id:101, name:'Beras', price:0, hpp:12000, stock:50, type:'raw' },
                         { id:102, name:'Teh Kering', price:0, hpp:5000, stock:20, type:'raw' },
@@ -174,6 +175,7 @@
                 this.save(); return ord;
             },
             processStockAndExpense(items, npUsed) {
+                // 1. Kurangi Bahan Baku
                 items.forEach(sold => {
                     const p = this.data.products.find(x => x.id === sold.id);
                     if (p && p.recipe) {
@@ -183,6 +185,7 @@
                         });
                     }
                 });
+                // 2. Kurangi Non-Prod & Catat Biaya Satuan ke Log
                 npUsed.forEach(id => {
                     const np = this.data.products.find(x => x.id == id);
                     if (np) {
@@ -235,11 +238,7 @@
                 document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
                 const navItem = document.getElementById('nav-'+view); if(navItem) navItem.classList.add('active');
                 document.getElementById('sidebar').classList.remove('open');
-                
-                // Perbaikan Title (menyesuaikan sidebar)
-                const titles = { 'supply': 'OPERASIONAL', 'inventory': 'STOK BARANG' };
-                document.getElementById('page-title').textContent = titles[view] || view.toUpperCase();
-                
+                document.getElementById('page-title').textContent = view.toUpperCase();
                 const content = document.getElementById('content');
                 if(Views[view]) content.innerHTML = Views[view]();
                 if(view === 'pos') Cart.render(); if(view === 'online') WACart.render();
@@ -256,12 +255,12 @@
                 document.body.appendChild(m);
                 m.onclick = e => { if(e.target===m) m.remove(); };
             },
+            // FIX: Added 'el' parameter to avoid reliance on global 'event'
             switchTab(tab, el) {
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                const target = document.getElementById('tab-' + tab);
-                if (target) target.classList.remove('hidden');
-                if (el) el.classList.add('active');
+                document.getElementById('tab-' + tab).classList.remove('hidden');
+                if (el) el.classList.add('active'); // Use explicit element reference
             }
         };
 
@@ -294,10 +293,30 @@
         const Views = {
             dashboard() {
                 const s = DB.getStats(new Date().toISOString().slice(0, 10));
-                return `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;"><div class="card" style="background:var(--accent-grad); color:white;">PENDAPATAN<br><h2>${UI.fmt(s.revenue)}</h2></div><div class="card">TOTAL BEBAN (HPP+OPS)<br><h2>${UI.fmt(s.expTotal)}</h2></div></div><div class="card mt-4"><h3>Profit Realtime (Hari Ini)</h3><table style="width:100%"><tr><td>Penjualan</td><td align="right">${UI.fmt(s.revenue)}</td></tr><tr><td>Beban Keseluruhan</td><td align="right">(${UI.fmt(s.expTotal)})</td></tr><tr style="background:#dcfce7"><td><b>LABA BERSIH</b></td><td align="right"><b style="color:green">${UI.fmt(s.netProfit)}</b></td></tr></table></div>`;
+                return `
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+                        <div class="card" style="background:var(--accent-grad); color:white;">PENDAPATAN<br><h2>${UI.fmt(s.revenue)}</h2></div>
+                        <div class="card">TOTAL BEBAN (HPP+OPS)<br><h2>${UI.fmt(s.expTotal)}</h2></div>
+                    </div>
+                    <div class="card mt-4"><h3>Profit Realtime (Hari Ini)</h3><table style="width:100%"><tr><td>Penjualan</td><td align="right">${UI.fmt(s.revenue)}</td></tr><tr><td>Beban Keseluruhan</td><td align="right">(${UI.fmt(s.expTotal)})</td></tr><tr style="background:#dcfce7"><td><b>LABA BERSIH</b></td><td align="right"><b style="color:green">${UI.fmt(s.netProfit)}</b></td></tr></table></div>`;
             },
             master() {
-                return `<div class="card"><h3>Tambah Menu & Resep Manual</h3><label class="font-bold">Nama Menu</label><input type="text" id="m-name" class="form-control mb-2" placeholder="Nasi Goreng"><div class="flex gap-2"><div style="flex:1"><label class="font-bold">Harga Jual</label><input type="number" id="m-price" class="form-control"></div><div style="flex:1"><label class="font-bold">Estimasi Modal</label><input type="number" id="m-hpp" class="form-control"></div></div><div style="background:#f8fafc; padding:15px; border-radius:10px; margin:15px 0;"><b>Setup Resep (Ketik Nama Bahan)</b><br><div class="flex gap-2 mt-2"><input type="text" id="r-ing-name" class="form-control" style="flex:2" placeholder="Ketik: Beras"><input type="number" id="r-qty" class="form-control" style="flex:1" placeholder="Gram"><button class="btn btn-ghost" onclick="Views.addIngredientToTemp()">+</button></div><ul id="temp-recipe-list" style="font-size:12px; margin-top:10px;"></ul></div><button class="btn btn-primary w-full" onclick="Views.saveNewProductWithRecipe()">SIMPAN MENU</button></div>`;
+                return `
+                <div class="card">
+                    <h3>Tambah Menu & Resep Manual</h3>
+                    <label class="font-bold">Nama Menu</label><input type="text" id="m-name" class="form-control mb-2" placeholder="Nasi Goreng">
+                    <div class="flex gap-2"><div style="flex:1"><label class="font-bold">Harga Jual</label><input type="number" id="m-price" class="form-control"></div><div style="flex:1"><label class="font-bold">Estimasi Modal</label><input type="number" id="m-hpp" class="form-control"></div></div>
+                    <div style="background:#f8fafc; padding:15px; border-radius:10px; margin:15px 0;">
+                        <b>Setup Resep (Ketik Nama Bahan)</b><br>
+                        <div class="flex gap-2 mt-2">
+                            <input type="text" id="r-ing-name" class="form-control" style="flex:2" placeholder="Ketik: Beras">
+                            <input type="number" id="r-qty" class="form-control" style="flex:1" placeholder="Gram">
+                            <button class="btn btn-ghost" onclick="Views.addIngredientToTemp()">+</button>
+                        </div>
+                        <ul id="temp-recipe-list" style="font-size:12px; margin-top:10px;"></ul>
+                    </div>
+                    <button class="btn btn-primary w-full" onclick="Views.saveNewProductWithRecipe()">SIMPAN MENU</button>
+                </div>`;
             },
             tempRecipe: [],
             addIngredientToTemp() {
@@ -327,7 +346,14 @@
             checkout() {
                 const tot = Cart.total(); if(tot === 0) return;
                 const nps = DB.data.products.filter(p => p.type === 'non-prod');
-                const html = `<div class="text-center mb-4"><h1>${UI.fmt(tot)}</h1></div><label class="font-bold">Additional</label><div style="max-height:100px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:10px;">${nps.map(np => `<label style="display:block;"><input type="checkbox" class="np-checkbox" value="${np.id}"> ${np.name}</label>`).join('')}</div><label class="font-bold">Metode</label><select id="p-method" class="form-control mb-4" onchange="Views.togglePayMode(${tot})"><option value="cash">Tunai</option><option value="transfer">Transfer</option></select><div id="cash-box"><label class="font-bold">Bayar</label><input type="number" id="p-amt" class="form-control" onkeyup="Views.calcChange(${tot})"><div id="p-change" class="mt-2 font-bold text-danger"></div></div>`;
+                const html = `
+                    <div class="text-center mb-4"><h1>${UI.fmt(tot)}</h1></div>
+                    <label class="font-bold">Additional (Pilih Plastik/Kemas)</label>
+                    <div style="max-height:100px; overflow-y:auto; margin-bottom:15px; border:1px solid var(--border); border-radius:10px; padding:10px;">
+                        ${nps.map(np => `<label style="display:block; margin-bottom:5px;"><input type="checkbox" class="np-checkbox" value="${np.id}"> ${np.name} (HPP: ${UI.fmt(np.hpp)})</label>`).join('')}
+                    </div>
+                    <label class="font-bold">Metode</label><select id="p-method" class="form-control mb-4" onchange="Views.togglePayMode(${tot})"><option value="cash">Tunai</option><option value="transfer">Transfer</option></select>
+                    <div id="cash-box"><label class="font-bold">Bayar</label><input type="number" id="p-amt" class="form-control" onkeyup="Views.calcChange(${tot})"><div id="p-change" class="mt-2 font-bold text-danger"></div></div>`;
                 UI.modal('PEMBAYARAN', html, `<button class="btn btn-ghost" onclick="document.querySelector('.modal-overlay').remove()">Batal</button><button class="btn btn-primary" onclick="Views.finishPay(${tot})">KONFIRMASI</button>`);
             },
             togglePayMode(tot) { const m = document.getElementById('p-method').value; document.getElementById('cash-box').classList.toggle('hidden', m==='transfer'); if(m==='transfer') document.getElementById('p-amt').value = tot; },
@@ -338,7 +364,7 @@
                 const npUsed = Array.from(document.querySelectorAll('.np-checkbox:checked')).map(cb => cb.value);
                 const trx = DB.addTransaction(Cart.items, tot, b, b-tot, m, npUsed);
                 document.querySelector('.modal-overlay').remove(); Cart.clear();
-                UI.modal('Berhasil!', `<p>Transaksi Sukses.</p>`, `<button class="btn btn-primary" onclick="Views.printTrx('${trx.id}')">🖨️ Cetak</button>`);
+                UI.modal('Berhasil!', `<p>Transaksi Sukses.</p>`, `<button class="btn btn-primary" onclick="Views.printTrx('${trx.id}')">🖨️ Cetak Struk</button>`);
             },
             checkoutWA() {
                 const nps = DB.data.products.filter(p => p.type === 'non-prod');
@@ -354,46 +380,131 @@
             inventory() {
                 const raw = DB.data.products.filter(p=>p.type==='raw');
                 const nonProd = DB.data.products.filter(p=>p.type==='non-prod');
-                return `<div class="flex gap-2 mb-4"><button class="tab-btn active" onclick="window.UI.switchTab('inv-list-prod', this)">Stok Produksi</button><button class="tab-btn" onclick="window.UI.switchTab('inv-non-prod', this)">Non Produksi</button><button class="tab-btn" onclick="window.UI.switchTab('inv-update', this)">Update Stok</button></div><div id="tab-inv-list-prod" class="tab-content"><div class="card"><table><thead><tr><th>Bahan</th><th>Stok</th></tr></thead><tbody>${raw.map(p=>`<tr><td>${p.name}</td><td>${p.stock.toFixed(2)}</td></tr>`).join('')}</tbody></table></div></div><div id="tab-inv-non-prod" class="tab-content hidden"><div class="card"><table><thead><tr><th>Barang</th><th>Stok</th></tr></thead><tbody>${nonProd.map(p=>`<tr><td>${p.name}</td><td>${p.stock}</td></tr>`).join('')}</tbody></table></div></div><div id="tab-inv-update" class="tab-content hidden"><div class="card"><h3>Update Stok</h3><input type="text" id="s-name" class="form-control mb-2" placeholder="Nama Bahan"><input type="number" id="s-qty" class="form-control mb-4" placeholder="Jumlah"><button class="btn btn-primary w-full" onclick="window.Views.saveSupply()">UPDATE</button></div></div>`;
+                return `
+                <div class="flex gap-2 mb-4">
+                    <button class="tab-btn active" onclick="UI.switchTab('inv-list-prod', this)">Daftar Stok Produksi</button>
+                    <button class="tab-btn" onclick="UI.switchTab('inv-non-prod', this)">Barang Non Produksi</button>
+                    <button class="tab-btn" onclick="UI.switchTab('inv-update', this)">Update Manual</button>
+                    <button class="tab-btn" onclick="UI.switchTab('inv-csv', this)">Import CSV</button>
+                </div>
+                <div id="tab-inv-list-prod" class="tab-content">
+                    <div class="card"><table><thead><tr><th>Bahan Baku</th><th>Stok (gram)</th><th>Nilai Aset</th></tr></thead><tbody>${raw.map(p=>`<tr><td>${p.name}</td><td>${p.stock.toFixed(2)}</td><td>${UI.fmt(p.stock*p.hpp)}</td></tr>`).join('')}</tbody></table></div>
+                </div>
+                <div id="tab-inv-non-prod" class="tab-content hidden">
+                    <div class="card">
+                        <h3>Tambah & Beli Barang Non Produksi</h3>
+                        <input type="text" id="np-name" class="form-control mb-2" placeholder="Ketik: Plastik / Sedotan">
+                        <div class="flex gap-2"><input type="number" id="np-qty" class="form-control" placeholder="Qty"><input type="number" id="np-total" class="form-control" placeholder="Total Harga"></div>
+                        <button class="btn btn-success w-full mt-4" onclick="Views.saveNonProd()">SIMPAN & CATAT PEMBELIAN</button>
+                        <table class="w-full mt-4"><thead><tr><th>Nama Barang</th><th>Stok Sisa</th></tr></thead><tbody>${nonProd.map(p=>`<tr><td>${p.name}</td><td>${p.stock}</td></tr>`).join('')}</tbody></table>
+                    </div>
+                </div>
+                <div id="tab-inv-update" class="tab-content hidden">
+                    <div class="card">
+                        <h3>Update Stok Barang (Manual)</h3>
+                        <input type="text" id="s-name" class="form-control mb-2" placeholder="Ketik Nama Barang (Misal: Beras)">
+                        <div class="flex gap-2"><input type="number" id="s-qty" class="form-control" placeholder="Qty Tambahan"><input type="number" id="s-total" class="form-control" placeholder="Total Harga Beli"></div>
+                        <button class="btn btn-primary w-full mt-4" onclick="Views.saveSupply()">UPDATE & CATAT BIAYA</button>
+                    </div>
+                </div>
+                <div id="tab-inv-csv" class="tab-content hidden">
+                    <div class="card"><h3>Import via CSV</h3><p style="font-size:11px;">Format: Nama, Harga, HPP, Stok, Tipe(raw/non-prod)</p><input type="file" id="csv-file" class="form-control mb-4" accept=".csv"><button class="btn btn-success w-full" onclick="Views.processCSV()">PROSES FILE</button></div>
+                </div>`;
             },
-            saveSupply() {
-                const n = document.getElementById('s-name').value, q = parseInt(document.getElementById('s-qty').value);
+            saveNonProd() {
+                const n = document.getElementById('np-name').value, q = parseInt(document.getElementById('np-qty').value), t = parseFloat(document.getElementById('np-total').value);
                 if(!n || isNaN(q)) return;
                 let p = DB.data.products.find(x=>x.name.toLowerCase() === n.toLowerCase());
-                if(p) p.stock += q; else DB.data.products.push({ id:Date.now(), name:n, price:0, hpp:0, stock:q, type:'raw' });
+                if(p) p.stock += q; else DB.data.products.push({ id:Date.now(), name:n, price:0, hpp:t/q, stock:q, type:'non-prod' });
+                DB.data.purchases.unshift({ date:new Date().toISOString(), type:'non-prod-purchase', name:n, total:t });
+                DB.save(); UI.toast('Success!'); Router.go('inventory');
+            },
+            saveSupply() {
+                const n = document.getElementById('s-name').value, q = parseInt(document.getElementById('s-qty').value), t = parseFloat(document.getElementById('s-total').value);
+                if(!n || isNaN(q)) return;
+                let p = DB.data.products.find(x=>x.name.toLowerCase() === n.toLowerCase());
+                if(p) p.stock += q; else DB.data.products.push({ id:Date.now(), name:n, price:0, hpp:t/q, stock:q, type:'raw' });
+                DB.data.purchases.unshift({ date:new Date().toISOString(), type:'stock-purchase', name:n, total:t });
                 DB.save(); UI.toast('Updated!'); Router.go('inventory');
             },
-            supply() { return `<div class="card"><h3>Catat Biaya Operasional (Misc)</h3><input type="text" id="ops-name" class="form-control mb-2" placeholder="Listrik / Gaji"><input type="number" id="ops-cost" class="form-control mb-4" placeholder="Rp..."><button class="btn btn-danger w-full" onclick="window.Views.saveOps()">SIMPAN BEBAN</button></div>`; },
+            processCSV() {
+                const file = document.getElementById('csv-file').files[0]; if(!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const lines = e.target.result.split('\n');
+                    lines.forEach((line, i) => {
+                        if(i === 0 || !line) return;
+                        const [name, price, hpp, stock, type] = line.split(',');
+                        DB.data.products.push({ id:Date.now()+i, name:name.trim(), price:parseFloat(price), hpp:parseFloat(hpp), stock:parseFloat(stock), type:type.trim() });
+                    });
+                    DB.save(); UI.toast('CSV Berhasil!'); Router.go('inventory');
+                };
+                reader.readAsText(file);
+            },
+            supply() { return `<div class="card"><h3>Catat Biaya Operasional (Misc)</h3><input type="text" id="ops-name" class="form-control mb-2" placeholder="Listrik / Gaji"><input type="number" id="ops-cost" class="form-control mb-4" placeholder="Rp..."><button class="btn btn-danger w-full" onclick="Views.saveOps()">SIMPAN BEBAN</button></div>`; },
             saveOps() { 
                 DB.data.purchases.unshift({ date:new Date().toISOString(), type:'misc', name:document.getElementById('ops-name').value, total:parseFloat(document.getElementById('ops-cost').value) });
                 DB.save(); UI.toast('Beban Dicatat!'); Router.go('dashboard'); 
             },
             finance() {
                 const s = DB.getStats();
-                return `<div class="card"><h3>Laporan Keuangan</h3><table style="width:100%"><tr><td>Penjualan</td><td align="right">${UI.fmt(s.revenue)}</td></tr><tr><td>Beban Total</td><td align="right">(${UI.fmt(s.expTotal)})</td></tr><tr style="background:#dcfce7"><td><b>LABA BERSIH</b></td><td align="right"><b>${UI.fmt(s.netProfit)}</b></td></tr></table></div>`;
+                return `<div class="card"><h3>Laporan Keuangan Komprehensif</h3><table style="width:100%"><tr><td>Total Penjualan</td><td align="right">${UI.fmt(s.revenue)}</td></tr><tr><td>Beban HPP (Resep Terjual)</td><td align="right">(${UI.fmt(s.hppRecipe)})</td></tr><tr><td>Beban Non-Prod & Operasional</td><td align="right">(${UI.fmt(s.expMisc + s.expNonProd)})</td></tr><tr style="background:#dcfce7"><td><b>LABA BERSIH</b></td><td align="right"><b style="color:green">${UI.fmt(s.netProfit)}</b></td></tr></table></div>`;
             },
             sales() {
                 const all = [...DB.data.transactions.map(t=>({...t, src:'OFFLINE'})), ...DB.data.waOrders.map(w=>({...w, src:'ONLINE'}))].sort((a,b)=>new Date(b.date)-new Date(a.date));
                 return `<div class="card"><h3>Log Penjualan</h3><div class="table-responsive"><table><thead><tr><th>Waktu</th><th>Via</th><th>Nama</th><th align="right">Total</th></tr></thead><tbody>${all.map(s=>`<tr><td>${UI.fmtDT(s.date)}</td><td>${s.src}</td><td>${s.customer||'Toko'}</td><td align="right">${UI.fmt(s.total)}</td></tr>`).join('')}</tbody></table></div></div>`;
+            },
+            expenses() {
+                return `
+                <div class="flex gap-2 mb-4">
+                    <button class="tab-btn active" onclick="UI.switchTab('exp-recipe', this)">Log Pengeluaran By Resep</button>
+                    <button class="tab-btn" onclick="UI.switchTab('exp-non-prod', this)">Log Pengeluaran Non Produksi</button>
+                </div>
+                <div id="tab-exp-recipe" class="tab-content">
+                    <div class="card"><h3>Log HPP (Resep dari Penjualan)</h3><div class="table-responsive"><table><thead><tr><th>Waktu</th><th>Deskripsi</th><th align="right">HPP</th></tr></thead><tbody>
+                        ${DB.data.transactions.map(t => `<tr><td>${UI.fmtDT(t.date)}</td><td>Modal Resep Transaksi ${t.id}</td><td align="right" style="color:red">${UI.fmt(t.items.reduce((a,i)=>a+(i.hpp*i.qty),0))}</td></tr>`).join('')}
+                    </tbody></table></div></div>
+                </div>
+                <div id="tab-exp-non-prod" class="tab-content hidden">
+                    <div class="card"><h3>Log Biaya Non-Produksi & Misc</h3><div class="table-responsive"><table><thead><tr><th>Waktu</th><th>Kategori</th><th>Detail</th><th align="right">Biaya</th></tr></thead><tbody>
+                        ${DB.data.purchases.map(e => `<tr><td>${UI.fmtDT(e.date)}</td><td>${e.type.replace('-usage','').replace('-purchase','').toUpperCase()}</td><td>${e.name || 'Misc'}</td><td align="right" style="color:red">${UI.fmt(e.total)}</td></tr>`).join('')}
+                    </tbody></table></div></div>
+                </div>`;
+            },
+            employees() {
+                const rows = DB.data.employees.map(e => `<tr><td>${e.name}</td><td>${e.role}</td></tr>`).join('');
+                return `
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
+                    <div class="card"><h3>Tambah Member</h3><input type="text" id="e-name" class="form-control mb-2" placeholder="Nama"><select id="e-role" class="form-control mb-2"><option value="cashier">Kasir</option><option value="admin">Admin</option></select><input type="password" id="e-pin" class="form-control mb-4" placeholder="PIN 4 Digit"><button class="btn btn-primary w-full" onclick="Views.addMember()">DAFTARKAN</button></div>
+                    <div class="card"><h3>Ganti PIN Saya</h3><input type="password" id="old-p" class="form-control mb-2" placeholder="PIN Lama"><input type="password" id="new-p" class="form-control mb-4" placeholder="PIN Baru"><button class="btn btn-danger w-full" onclick="Views.changePin()">UPDATE PIN</button></div>
+                </div>
+                <div class="card mt-4"><h3>Tim</h3><table>${rows}</table><button class="btn btn-danger w-full mt-4" onclick="if(confirm('RESET SEMUA DATA?')){localStorage.removeItem('umkm_erp_v47');location.reload();}">RESET PABRIK</button></div>`;
+            },
+            addMember() {
+                const n = document.getElementById('e-name').value, p = document.getElementById('e-pin').value;
+                if(!n || !p) return; DB.data.employees.push({ name:n, role:document.getElementById('e-role').value, pin:p }); DB.save(); UI.toast('Success!'); Router.go('employees');
+            },
+            changePin() {
+                const o = document.getElementById('old-p').value, n = document.getElementById('new-p').value;
+                if(o !== Login.user.pin) return UI.toast('PIN Salah!');
+                const u = DB.data.employees.find(e=>e.pin === Login.user.pin);
+                if(u) { u.pin = n; Login.user.pin = n; DB.save(); UI.toast('Updated!'); Router.go('employees'); }
+            },
+            printTrx(id) { const t=DB.data.transactions.find(x=>x.id===id); if(t) this.print(t); },
+            printWA(id) { const w=DB.data.waOrders.find(x=>x.id===id); if(w) this.print({...w, method:'wa'}); },
+            print(d) {
+                document.getElementById('r-shop-name').textContent = APP_SETTINGS.shopName;
+                document.getElementById('r-shop-addr').textContent = APP_SETTINGS.shopAddress;
+                document.getElementById('r-items').innerHTML = d.items.map(i=>`<div class="flex justify-between"><span>${i.name} x${i.qty}</span><span>${UI.fmt(i.price*i.qty)}</span></div>`).join('');
+                document.getElementById('r-total').textContent = UI.fmt(d.total);
+                setTimeout(() => { window.print(); }, 500);
             }
         };
-
-        // EXPLICIT GLOBAL SCOPING FOR PRODUCTION (NETLIFY)
-        window.DB = DB;
-        window.UI = UI;
-        window.Views = Views;
-        window.Router = Router;
-        window.Cart = Cart;
-        window.WACart = WACart;
-        window.Login = Login;
 
         window.onload = () => {
             document.getElementById('date-display').textContent = new Date().toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long' });
             DB.init();
-            setTimeout(() => { 
-                document.getElementById('loading-screen').style.display='none'; 
-                document.getElementById('login-screen').style.display='flex'; 
-            }, 800);
+            setTimeout(() => { document.getElementById('loading-screen').style.display='none'; document.getElementById('login-screen').style.display='flex'; }, 800);
         };
     </script>
 </body>
