@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UMKM ERP Ultimate - Sembako v56</title>
+    <title>UMKM ERP Ultimate - Enterprise v47</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
@@ -54,9 +54,9 @@
         header { height:70px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 20px; justify-content:space-between; flex-shrink: 0; }
         .content { flex:1; overflow-y:auto; padding:20px; }
 
-        .pos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 12px; overflow-y: auto; padding-bottom: 20px; }
+        .pos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; overflow-y: auto; padding-bottom: 20px; }
         .product { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow:hidden; cursor:pointer; background:white; transition: 0.2s; }
-        .p-img { height:80px; background:#f1f5f9; border-bottom:1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+        .p-img { height:100px; background:#f1f5f9; object-fit:cover; width:100%; border-bottom:1px solid var(--border); }
 
         .cart-panel { width: 320px; background: white; border-radius: var(--radius-lg); border: 1px solid var(--border); display: flex; flex-direction: column; height: 100%; padding: 20px; box-shadow: var(--shadow-md); }
 
@@ -76,7 +76,6 @@
             .cart-panel { display: none; }
             aside { position: fixed; transform: translateX(-100%); height: 100%; width: 260px; }
             aside.open { transform: translateX(0); }
-            .pos-layout { flex-direction: column; }
         }
     </style>
 </head>
@@ -104,7 +103,7 @@
             <div style="padding:25px; text-align:center;"><h2 style="color:white; font-weight:800; margin:0;">UMKM ERP.</h2></div>
             <nav style="flex:1; overflow-y:auto;">
                 <a class="nav-item hidden" id="nav-dashboard" onclick="Router.go('dashboard')"><span>📊</span> <span>Dashboard</span></a>
-                <a class="nav-item hidden" id="nav-master" onclick="Router.go('master')"><span>⚙️</span> <span>Produk</span></a>
+                <a class="nav-item hidden" id="nav-master" onclick="Router.go('master')"><span>⚙️</span> <span>Menu & Resep</span></a>
                 <a class="nav-item" id="nav-pos" onclick="Router.go('pos')"><span>🛒</span> <span>Kasir Toko</span></a>
                 <a class="nav-item" id="nav-online" onclick="Router.go('online')"><span>📱</span> <span>Order WA</span></a>
                 <a class="nav-item hidden" id="nav-sales" onclick="Router.go('sales')"><span>📈</span> <span>Log Penjualan</span></a>
@@ -128,7 +127,7 @@
     </div>
 
     <div id="thermal-receipt" style="display:none;">
-        <div style="text-align:center; margin-bottom:10px;"><b id="r-shop-name">SEMBAKO ELITE</b><br><span id="r-shop-addr" style="font-size:9px;">Pasar Digital Blok B-09</span></div>
+        <div style="text-align:center; margin-bottom:10px;"><b id="r-shop-name">UMKM ELITE POS</b><br><span id="r-shop-addr" style="font-size:9px;">Digital District No. 101</span></div>
         <div style="border-top:1px dashed black; margin:5px 0;"></div>
         <div id="r-items"></div>
         <div style="border-top:1px dashed black; margin:5px 0;"></div>
@@ -139,49 +138,30 @@
     <div id="toast-msg" class="toast"></div>
 
     <script>
-        const APP_SETTINGS = { shopName: "SEMBAKO ELITE", shopAddress: "Pasar Digital Blok B-09" };
-        const STORAGE_KEY = 'umkm_erp_sembako_v56_final';
+        const APP_SETTINGS = { shopName: "UMKM ELITE POS", shopAddress: "Digital District No. 101" };
 
         const DB = {
             data: { products: [], transactions: [], purchases: [], employees: [], waOrders: [] },
             init() {
-                const store = localStorage.getItem(STORAGE_KEY);
+                const store = localStorage.getItem('umkm_erp_v47');
                 if(store) this.data = JSON.parse(store);
                 else {
-                    // SEED DATA LENGKAP - STOK AWAL BENAR
+                    // Seed Data Default
                     this.data.products = [ 
-                        // PHYSICAL ASSETS (Hanya ini yang muncul di Stok Barang)
-                        { id:101, name:'Beras Mentah', price:0, hpp:10000, stock:100, type:'raw' },
-                        { id:102, name:'Rokok Surya 16 Master', price:0, hpp:35000, stock:1000, type:'raw' },
-                        { id:103, name:'Rokok Surya 12 Master', price:0, hpp:25000, stock:1000, type:'raw' },
-                        { id:104, name:'GG Filter Master', price:0, hpp:25000, stock:1000, type:'raw' },
-                        { id:105, name:'Sampoerna 12 Master', price:0, hpp:25000, stock:1000, type:'raw' },
-                        { id:106, name:'Sampoerna 16 Master', price:0, hpp:45000, stock:1000, type:'raw' },
-                        { id:307, name:'TELOR', price:0, hpp:16000, stock:100, type:'raw' }, // Induk Stok
-                        { id:108, name:'Permen Master', price:0, hpp:50, stock:10000, type:'raw' },
-                        { id:109, name:'Wafer Master', price:0, hpp:500, stock:10000, type:'raw' },
-                        { id:110, name:'Bensin Master', price:0, hpp:10000, stock:100, type:'raw' },
-                        { id:201, name:'Plastik Kresek', price:0, hpp:200, stock:500, type:'non-prod' },
-                        
-                        // POS VOUCHERS (Hanya untuk Jualan)
-                        { id:1, name:'Beras (Kg)', price:12000, hpp:10000, stock:0, type:'finished', icon:'🌾', recipe: [{name:'Beras Mentah', qty:1}] },
-                        { id:2, name:'Rokok Surya 16', price:37000, hpp:35000, stock:0, type:'finished', icon:'🚬', recipe: [{name:'Rokok Surya 16 Master', qty:1}] },
-                        { id:3, name:'Rokok Surya 12', price:27000, hpp:25000, stock:0, type:'finished', icon:'🚬', recipe: [{name:'Rokok Surya 12 Master', qty:1}] },
-                        { id:4, name:'GG Filter', price:27000, hpp:25000, stock:0, type:'finished', icon:'🚬', recipe: [{name:'GG Filter Master', qty:1}] },
-                        { id:5, name:'Sampoerna 12', price:30000, hpp:25000, stock:0, type:'finished', icon:'🚬', recipe: [{name:'Sampoerna 12 Master', qty:1}] },
-                        { id:6, name:'Sampoerna 16', price:50000, hpp:45000, stock:0, type:'finished', icon:'🚬', recipe: [{name:'Sampoerna 16 Master', qty:1}] },
-                        { id:7, name:'Telor (1 Kg)', price:22000, hpp:16000, stock:0, type:'finished', icon:'🥚', recipe: [{name:'TELOR', qty:1}] },
-                        { id:8, name:'Telor (1/2 Kg)', price:16000, hpp:8000, stock:0, type:'finished', icon:'🥚', recipe: [{name:'TELOR', qty:0.5}] },
-                        { id:9, name:'Telor (1/4 Kg)', price:9000, hpp:4000, stock:0, type:'finished', icon:'🥚', recipe: [{name:'TELOR', qty:0.25}] },
-                        { id:10, name:'Permen', price:250, hpp:50, stock:0, type:'finished', icon:'🍬', recipe: [{name:'Permen Master', qty:1}] },
-                        { id:11, name:'Wafer', price:1500, hpp:500, stock:0, type:'finished', icon:'🍪', recipe: [{name:'Wafer Master', qty:1}] },
-                        { id:12, name:'Bensin', price:12000, hpp:10000, stock:0, type:'finished', icon:'⛽', recipe: [{name:'Bensin Master', qty:1}] }
+                        { id:101, name:'Beras', price:0, hpp:12000, stock:50, type:'raw' },
+                        { id:102, name:'Teh Kering', price:0, hpp:5000, stock:20, type:'raw' },
+                        { id:103, name:'Gula Pasir', price:0, hpp:15000, stock:10, type:'raw' },
+                        { id:104, name:'Kerupuk Mentah', price:0, hpp:25000, stock:5, type:'raw' },
+                        { id:201, name:'Plastik Kresek', price:0, hpp:500, stock:100, type:'non-prod' },
+                        { id:1, name:'Nasi Goreng', price:20000, hpp:8000, stock:0, type:'finished', recipe: [{name:'Beras', qty:0.2}] },
+                        { id:2, name:'Teh Manis', price:5000, hpp:2000, stock:0, type:'finished', recipe: [{name:'Teh Kering', qty:0.01}, {name:'Gula Pasir', qty:0.02}] },
+                        { id:3, name:'Kerupuk', price:2000, hpp:1000, stock:0, type:'finished', recipe: [{name:'Kerupuk Mentah', qty:0.05}] }
                     ];
-                    this.data.employees = [ { pin:'1234', name:'Owner', role:'admin' }, { pin:'0000', name:'Staff', role:'cashier' } ];
+                    this.data.employees = [ { pin:'1234', name:'Owner', role:'admin' }, { pin:'0000', name:'Kasir', role:'cashier' } ];
                     this.save();
                 }
             },
-            save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data)); },
+            save() { localStorage.setItem('umkm_erp_v47', JSON.stringify(this.data)); },
             addTransaction(items, total, pay, change, method, npUsed = []) {
                 const trx = { id:'TRX'+Date.now().toString().slice(-6), date:new Date().toISOString(), items, total, pay, change, method, npUsed };
                 this.data.transactions.unshift(trx);
@@ -195,7 +175,7 @@
                 this.save(); return ord;
             },
             processStockAndExpense(items, npUsed) {
-                // SHARING STOCK LOGIC
+                // 1. Kurangi Bahan Baku
                 items.forEach(sold => {
                     const p = this.data.products.find(x => x.id === sold.id);
                     if (p && p.recipe) {
@@ -203,14 +183,20 @@
                             const raw = this.data.products.find(r => r.name.toLowerCase() === ing.name.toLowerCase());
                             if (raw) raw.stock -= (ing.qty * sold.qty);
                         });
-                    } else if(p) { p.stock -= sold.qty; }
+                    }
                 });
-                // NON-PROD EXPENSE
+                // 2. Kurangi Non-Prod & Catat Biaya Satuan ke Log
                 npUsed.forEach(id => {
                     const np = this.data.products.find(x => x.id == id);
                     if (np) {
                         np.stock -= 1;
-                        this.data.purchases.unshift({ date: new Date().toISOString(), type: 'non-prod-usage', name: np.name, total: np.hpp, isUsage: true });
+                        this.data.purchases.unshift({ 
+                            date: new Date().toISOString(), 
+                            type: 'non-prod-usage', 
+                            name: np.name, 
+                            total: np.hpp, 
+                            isUsage: true 
+                        });
                     }
                 });
             },
@@ -222,9 +208,11 @@
                     purs = purs.filter(p => p.date.startsWith(filterDate));
                 }
                 const rev = trs.reduce((s,t)=>s+t.total,0) + was.reduce((s,w)=>s+w.total,0);
-                const hppSold = trs.reduce((s,t)=>s+t.items.reduce((a,i)=>a+(i.hpp*i.qty),0),0) + was.reduce((s,w)=>s+w.items.reduce((a,i)=>a+(i.hpp*i.qty),0),0);
-                const expOther = purs.filter(p=>p.type==='misc' || p.type==='non-prod-usage').reduce((s,p)=>s+p.total, 0);
-                return { revenue: rev, hpp: hppSold, gross: rev-hppSold, exp: expOther, netProfit: (rev-hppSold)-expOther };
+                const hppRecipe = trs.reduce((s,t)=>s+t.items.reduce((a,i)=>a+(i.hpp*i.qty),0),0) + was.reduce((s,w)=>s+w.items.reduce((a,i)=>a+(i.hpp*i.qty),0),0);
+                const expNonProd = purs.filter(p=>p.type==='non-prod-usage').reduce((s,p)=>s+p.total, 0);
+                const expMisc = purs.filter(p=>p.type==='misc').reduce((s,p)=>s+p.total, 0);
+                const expTotal = hppRecipe + expNonProd + expMisc;
+                return { revenue: rev, hppRecipe, expNonProd, expMisc, expTotal, netProfit: rev - expTotal };
             }
         };
 
@@ -277,7 +265,7 @@
 
         const Cart = {
             items: [],
-            add(p) { const ex=this.items.find(i=>i.id===p.id); if(ex) ex.qty++; else this.items.push({...p, qty:1}); this.render(); UI.toast('Added'); },
+            add(p) { const ex=this.items.find(i=>i.id===p.id); if(ex) ex.qty++; else this.items.push({...p, qty:1}); this.render(); UI.toast('Ditambah'); },
             remove(id) { this.items = this.items.filter(i=>i.id!==id); this.render(); },
             total() { return this.items.reduce((s,i)=>s+(i.price*i.qty), 0); },
             render() {
@@ -290,7 +278,7 @@
 
         const WACart = {
             items: [],
-            add(p) { const ex=this.items.find(i=>i.id===p.id); if(ex) ex.qty++; else this.items.push({...p, qty:1}); this.render(); UI.toast('WA Added'); },
+            add(p) { const ex=this.items.find(i=>i.id===p.id); if(ex) ex.qty++; else this.items.push({...p, qty:1}); this.render(); UI.toast('WA Ditambah'); },
             remove(id) { this.items = this.items.filter(i=>i.id!==id); this.render(); },
             total() { return this.items.reduce((s,i)=>s+(i.price*i.qty), 0); },
             render() {
@@ -307,38 +295,64 @@
                 return `
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
                         <div class="card" style="background:var(--accent-grad); color:white;">PENDAPATAN<br><h2>${UI.fmt(s.revenue)}</h2></div>
-                        <div class="card">TOTAL BEBAN (HPP+OPS)<br><h2>${UI.fmt(s.hpp + s.exp)}</h2></div>
+                        <div class="card">TOTAL BEBAN (HPP+OPS)<br><h2>${UI.fmt(s.expTotal)}</h2></div>
                     </div>
-                    <div class="card mt-4"><h3>Profit Laporan (Hari Ini)</h3><table style="width:100%"><tr><td>Penjualan</td><td align="right">${UI.fmt(s.revenue)}</td></tr><tr><td>Modal Barang & Ops</td><td align="right">(${UI.fmt(s.hpp + s.exp)})</td></tr><tr style="background:#dcfce7"><td><b>LABA BERSIH</b></td><td align="right"><b style="color:green">${UI.fmt(s.netProfit)}</b></td></tr></table></div>`;
+                    <div class="card mt-4"><h3>Profit Realtime (Hari Ini)</h3><table style="width:100%"><tr><td>Penjualan</td><td align="right">${UI.fmt(s.revenue)}</td></tr><tr><td>Beban Keseluruhan</td><td align="right">(${UI.fmt(s.expTotal)})</td></tr><tr style="background:#dcfce7"><td><b>LABA BERSIH</b></td><td align="right"><b style="color:green">${UI.fmt(s.netProfit)}</b></td></tr></table></div>`;
             },
             master() {
                 return `
                 <div class="card">
-                    <h3>Tambah Produk Baru</h3>
-                    <label class="font-bold">Nama Produk</label><input type="text" id="m-name" class="form-control mb-2" placeholder="Contoh: Rokok Surya 16">
-                    <div class="flex gap-2"><div style="flex:1"><label class="font-bold">Harga Jual</label><input type="number" id="m-price" class="form-control"></div><div style="flex:1"><label class="font-bold">HPP/Modal</label><input type="number" id="m-hpp" class="form-control"></div></div>
-                    <div class="flex gap-2 mt-2"><div style="flex:1"><label class="font-bold">Stok Awal</label><input type="number" id="m-stock" class="form-control"></div><div style="flex:1"><label class="font-bold">Tipe</label><select id="m-type" class="form-control"><option value="finished">Barang Jual</option><option value="raw">Bahan Mentah</option><option value="non-prod">Kemasan/Plastik</option></select></div></div>
-                    <button class="btn btn-primary w-full mt-4" onclick="Views.saveNewProduct()">SIMPAN PRODUK</button>
+                    <h3>Tambah Menu & Resep Manual</h3>
+                    <label class="font-bold">Nama Menu</label><input type="text" id="m-name" class="form-control mb-2" placeholder="Nasi Goreng">
+                    <div class="flex gap-2"><div style="flex:1"><label class="font-bold">Harga Jual</label><input type="number" id="m-price" class="form-control"></div><div style="flex:1"><label class="font-bold">Estimasi Modal</label><input type="number" id="m-hpp" class="form-control"></div></div>
+                    <div style="background:#f8fafc; padding:15px; border-radius:10px; margin:15px 0;">
+                        <b>Setup Resep (Ketik Nama Bahan)</b><br>
+                        <div class="flex gap-2 mt-2">
+                            <input type="text" id="r-ing-name" class="form-control" style="flex:2" placeholder="Ketik: Beras">
+                            <input type="number" id="r-qty" class="form-control" style="flex:1" placeholder="Gram">
+                            <button class="btn btn-ghost" onclick="Views.addIngredientToTemp()">+</button>
+                        </div>
+                        <ul id="temp-recipe-list" style="font-size:12px; margin-top:10px;"></ul>
+                    </div>
+                    <button class="btn btn-primary w-full" onclick="Views.saveNewProductWithRecipe()">SIMPAN MENU</button>
                 </div>`;
             },
-            saveNewProduct() {
-                const n = document.getElementById('m-name').value, p = parseFloat(document.getElementById('m-price').value), h = parseFloat(document.getElementById('m-hpp').value), s = parseFloat(document.getElementById('m-stock').value), t = document.getElementById('m-type').value;
-                if(!n) return UI.toast('Lengkapi nama!');
-                DB.data.products.push({ id:Date.now(), name:n, price:p||0, hpp:h||0, stock:s||0, type:t });
-                DB.save(); UI.toast('Berhasil!'); Router.go('master');
+            tempRecipe: [],
+            addIngredientToTemp() {
+                const n = document.getElementById('r-ing-name').value, q = parseFloat(document.getElementById('r-qty').value);
+                if(!n || !q) return; this.tempRecipe.push({name: n, qty: q});
+                document.getElementById('temp-recipe-list').innerHTML += `<li>${n} : ${q} gram</li>`;
+                document.getElementById('r-ing-name').value = ''; document.getElementById('r-qty').value = '';
+            },
+            saveNewProductWithRecipe() {
+                const n = document.getElementById('m-name').value, p = parseFloat(document.getElementById('m-price').value), h = parseFloat(document.getElementById('m-hpp').value);
+                if(!n || !p) return UI.toast('Lengkapi data!');
+                this.tempRecipe.forEach(ing => {
+                    const exists = DB.data.products.find(x => x.name.toLowerCase() === ing.name.toLowerCase());
+                    if (!exists) DB.data.products.push({ id: Date.now()+Math.random(), name: ing.name, price: 0, hpp: 0, stock: 0, type: 'raw' });
+                });
+                DB.data.products.push({ id:Date.now(), name:n, price:p, hpp:h, stock:0, type:'finished', recipe: [...this.tempRecipe] });
+                DB.save(); UI.toast('Success!'); this.tempRecipe = []; Router.go('master');
             },
             pos() {
                 const pds = DB.data.products.filter(p=>p.type==='finished');
-                return `<div class="pos-layout"><div class="pos-main"><input type="text" class="form-control mb-4" placeholder="Cari..."><div class="pos-grid">${pds.map(p=>`<div class="product" onclick='Cart.add(${JSON.stringify(p)})'><div class="p-img">${p.icon || '🛍️'}</div><div class="p-body"><b>${p.name}</b><br><span style="color:var(--accent)">${UI.fmt(p.price)}</span></div></div>`).join('')}</div></div><div class="cart-panel"><h3>Kasir</h3><div id="cart-list" style="flex:1; overflow-y:auto;"></div><hr><div class="flex justify-between mb-4"><span>Total</span><b id="cart-total" style="font-size:1.5rem; color:var(--accent);">Rp 0</b></div><button class="btn btn-primary w-full" onclick="Views.checkout()">PROSES BAYAR</button></div></div>`;
+                return `<div class="pos-layout"><div class="pos-main"><input type="text" class="form-control mb-4" placeholder="Cari menu..."><div class="pos-grid">${pds.map(p=>`<div class="product" onclick='Cart.add(${JSON.stringify(p)})'><img src="https://picsum.photos/seed/${p.id}/300/200" class="p-img"><div class="p-body"><b>${p.name}</b><br><span style="color:var(--accent)">${UI.fmt(p.price)}</span></div></div>`).join('')}</div></div><div class="cart-panel"><h3>Keranjang</h3><div id="cart-list" style="flex:1; overflow-y:auto;"></div><hr><div class="flex justify-between mb-4"><span>Total</span><b id="cart-total" style="font-size:1.5rem; color:var(--accent);">Rp 0</b></div><button class="btn btn-primary w-full" onclick="Views.checkout()">BAYAR</button></div></div>`;
             },
             online() {
                 const pds = DB.data.products.filter(p=>p.type==='finished');
-                return `<div class="pos-layout"><div class="pos-main"><input type="text" class="form-control mb-4" placeholder="Cari..."><div class="pos-grid">${pds.map(p=>`<div class="product" onclick='WACart.add(${JSON.stringify(p)})'><div class="p-img">${p.icon || '📱'}</div><div class="p-body"><b>${p.name}</b><br><span style="color:var(--success)">${UI.fmt(p.price)}</span></div></div>`).join('')}</div></div><div class="cart-panel"><h3>Order WA</h3><div id="wa-cart-list" style="flex:1; overflow-y:auto;"></div><hr><div class="flex justify-between mb-4"><span>Total</span><b id="wa-cart-total" style="color:var(--success);">Rp 0</b></div><button class="btn btn-success w-full" onclick="Views.checkoutWA()">SIMPAN ORDER</button></div></div>`;
+                return `<div class="pos-layout"><div class="pos-main"><input type="text" class="form-control mb-4" placeholder="Cari..."><div class="pos-grid">${pds.map(p=>`<div class="product" onclick='WACart.add(${JSON.stringify(p)})'><img src="https://picsum.photos/seed/${p.id}/300/200" class="p-img"><div class="p-body"><b>${p.name}</b><br><span style="color:var(--success)">${UI.fmt(p.price)}</span></div></div>`).join('')}</div></div><div class="cart-panel"><h3>Order WA</h3><div id="wa-cart-list" style="flex:1; overflow-y:auto;"></div><hr><div class="flex justify-between mb-4"><span>Total</span><b id="wa-cart-total" style="color:var(--success);">Rp 0</b></div><button class="btn btn-success w-full" onclick="Views.checkoutWA()">SIMPAN ORDER</button></div></div>`;
             },
             checkout() {
                 const tot = Cart.total(); if(tot === 0) return;
                 const nps = DB.data.products.filter(p => p.type === 'non-prod');
-                const html = `<div class="text-center mb-4"><h1>${UI.fmt(tot)}</h1></div><label class="font-bold">Kemasan</label><div style="max-height:80px; overflow-y:auto; margin-bottom:15px; border:1px solid var(--border); border-radius:10px; padding:10px;">${nps.map(np => `<label style="display:block;"><input type="checkbox" class="np-checkbox" value="${np.id}"> ${np.name}</label>`).join('')}</div><label class="font-bold">Metode</label><select id="p-method" class="form-control mb-4" onchange="Views.togglePayMode(${tot})"><option value="cash">Tunai</option><option value="transfer">Transfer</option></select><div id="cash-box"><label class="font-bold">Bayar</label><input type="number" id="p-amt" class="form-control" onkeyup="Views.calcChange(${tot})"><div id="p-change" class="mt-2 font-bold text-danger"></div></div>`;
+                const html = `
+                    <div class="text-center mb-4"><h1>${UI.fmt(tot)}</h1></div>
+                    <label class="font-bold">Additional (Pilih Plastik/Kemas)</label>
+                    <div style="max-height:100px; overflow-y:auto; margin-bottom:15px; border:1px solid var(--border); border-radius:10px; padding:10px;">
+                        ${nps.map(np => `<label style="display:block; margin-bottom:5px;"><input type="checkbox" class="np-checkbox" value="${np.id}"> ${np.name} (HPP: ${UI.fmt(np.hpp)})</label>`).join('')}
+                    </div>
+                    <label class="font-bold">Metode</label><select id="p-method" class="form-control mb-4" onchange="Views.togglePayMode(${tot})"><option value="cash">Tunai</option><option value="transfer">Transfer</option></select>
+                    <div id="cash-box"><label class="font-bold">Bayar</label><input type="number" id="p-amt" class="form-control" onkeyup="Views.calcChange(${tot})"><div id="p-change" class="mt-2 font-bold text-danger"></div></div>`;
                 UI.modal('PEMBAYARAN', html, `<button class="btn btn-ghost" onclick="document.querySelector('.modal-overlay').remove()">Batal</button><button class="btn btn-primary" onclick="Views.finishPay(${tot})">KONFIRMASI</button>`);
             },
             togglePayMode(tot) { const m = document.getElementById('p-method').value; document.getElementById('cash-box').classList.toggle('hidden', m==='transfer'); if(m==='transfer') document.getElementById('p-amt').value = tot; },
@@ -353,7 +367,7 @@
             },
             checkoutWA() {
                 const nps = DB.data.products.filter(p => p.type === 'non-prod');
-                const html = `<input type="text" id="wa-name" class="form-control mb-2" placeholder="Nama"><input type="number" id="wa-phone" class="form-control" placeholder="628..."><label class="font-bold">Kemasan</label><div style="max-height:80px; overflow-y:auto; border:1px solid var(--border); padding:10px;">${nps.map(np => `<label style="display:block;"><input type="checkbox" class="wa-np-checkbox" value="${np.id}"> ${np.name}</label>`).join('')}</div>`;
+                const html = `<input type="text" id="wa-name" class="form-control mb-2" placeholder="Nama"><input type="number" id="wa-phone" class="form-control mb-4" placeholder="628..."><label class="font-bold">Additional</label><div style="max-height:100px; overflow-y:auto; border:1px solid var(--border); padding:10px;">${nps.map(np => `<label style="display:block;"><input type="checkbox" class="wa-np-checkbox" value="${np.id}"> ${np.name}</label>`).join('')}</div>`;
                 UI.modal('ORDER WA', html, `<button class="btn btn-success" onclick="Views.finishWA()">SIMPAN</button>`);
             },
             finishWA() {
@@ -363,13 +377,46 @@
                 UI.modal('Disimpan!', `<p>Order Berhasil.</p>`, `<button class="btn btn-primary" onclick="Views.printWA('${ord.id}')">🖨️ Cetak</button>`);
             },
             inventory() {
-                // FILTER HANYA BARANG FISIK (RAW & NON-PROD) - ANTI NOL
-                const items = DB.data.products.filter(p => p.type === 'raw' || p.type === 'non-prod');
+                const raw = DB.data.products.filter(p=>p.type==='raw');
+                const nonProd = DB.data.products.filter(p=>p.type==='non-prod');
                 return `
-                <div class="flex gap-2 mb-4"><button class="tab-btn active" onclick="UI.switchTab('inv-list')">Daftar Stok</button><button class="tab-btn" onclick="UI.switchTab('inv-update')">Update Manual</button><button class="tab-btn" onclick="UI.switchTab('inv-csv')">Import CSV</button></div>
-                <div id="tab-inv-list" class="tab-content"><div class="card"><table><thead><tr><th>Barang</th><th>Stok Sisa</th><th>Nilai Aset</th></tr></thead><tbody>${items.map(p=>`<tr><td>${p.name}</td><td>${p.stock.toFixed(2)}</td><td>${UI.fmt(p.stock*p.hpp)}</td></tr>`).join('')}</tbody></table></div></div>
-                <div id="tab-inv-update" class="tab-content hidden"><div class="card"><h3>Update Stok & Catat Pengeluaran</h3><input type="text" id="s-name" class="form-control mb-2" placeholder="Nama Barang (Misal: TELOR)"><div class="flex gap-2"><input type="number" id="s-qty" class="form-control" placeholder="Qty Tambah"><input type="number" id="s-total" class="form-control" placeholder="Total Harga"></div><button class="btn btn-primary w-full mt-4" onclick="Views.saveSupply()">UPDATE & CATAT BIAYA</button></div></div>
-                <div id="tab-inv-csv" class="tab-content hidden"><div class="card"><h3>Import via CSV</h3><input type="file" id="csv-file" class="form-control mb-4" accept=".csv"><button class="btn btn-success w-full" onclick="Views.processCSV()">PROSES</button></div></div>`;
+                <div class="flex gap-2 mb-4">
+                    <button class="tab-btn active" onclick="UI.switchTab('inv-list-prod')">Daftar Stok Produksi</button>
+                    <button class="tab-btn" onclick="UI.switchTab('inv-non-prod')">Barang Non Produksi</button>
+                    <button class="tab-btn" onclick="UI.switchTab('inv-update')">Update Manual</button>
+                    <button class="tab-btn" onclick="UI.switchTab('inv-csv')">Import CSV</button>
+                </div>
+                <div id="tab-inv-list-prod" class="tab-content">
+                    <div class="card"><table><thead><tr><th>Bahan Baku</th><th>Stok (gram)</th><th>Nilai Aset</th></tr></thead><tbody>${raw.map(p=>`<tr><td>${p.name}</td><td>${p.stock.toFixed(2)}</td><td>${UI.fmt(p.stock*p.hpp)}</td></tr>`).join('')}</tbody></table></div>
+                </div>
+                <div id="tab-inv-non-prod" class="tab-content hidden">
+                    <div class="card">
+                        <h3>Tambah & Beli Barang Non Produksi</h3>
+                        <input type="text" id="np-name" class="form-control mb-2" placeholder="Ketik: Plastik / Sedotan">
+                        <div class="flex gap-2"><input type="number" id="np-qty" class="form-control" placeholder="Qty"><input type="number" id="np-total" class="form-control" placeholder="Total Harga"></div>
+                        <button class="btn btn-success w-full mt-4" onclick="Views.saveNonProd()">SIMPAN & CATAT PEMBELIAN</button>
+                        <table class="w-full mt-4"><thead><tr><th>Nama Barang</th><th>Stok Sisa</th></tr></thead><tbody>${nonProd.map(p=>`<tr><td>${p.name}</td><td>${p.stock}</td></tr>`).join('')}</tbody></table>
+                    </div>
+                </div>
+                <div id="tab-inv-update" class="tab-content hidden">
+                    <div class="card">
+                        <h3>Update Stok Barang (Manual)</h3>
+                        <input type="text" id="s-name" class="form-control mb-2" placeholder="Ketik Nama Barang (Misal: Beras)">
+                        <div class="flex gap-2"><input type="number" id="s-qty" class="form-control" placeholder="Qty Tambahan"><input type="number" id="s-total" class="form-control" placeholder="Total Harga Beli"></div>
+                        <button class="btn btn-primary w-full mt-4" onclick="Views.saveSupply()">UPDATE & CATAT BIAYA</button>
+                    </div>
+                </div>
+                <div id="tab-inv-csv" class="tab-content hidden">
+                    <div class="card"><h3>Import via CSV</h3><p style="font-size:11px;">Format: Nama, Harga, HPP, Stok, Tipe(raw/non-prod)</p><input type="file" id="csv-file" class="form-control mb-4" accept=".csv"><button class="btn btn-success w-full" onclick="Views.processCSV()">PROSES FILE</button></div>
+                </div>`;
+            },
+            saveNonProd() {
+                const n = document.getElementById('np-name').value, q = parseInt(document.getElementById('np-qty').value), t = parseFloat(document.getElementById('np-total').value);
+                if(!n || isNaN(q)) return;
+                let p = DB.data.products.find(x=>x.name.toLowerCase() === n.toLowerCase());
+                if(p) p.stock += q; else DB.data.products.push({ id:Date.now(), name:n, price:0, hpp:t/q, stock:q, type:'non-prod' });
+                DB.data.purchases.unshift({ date:new Date().toISOString(), type:'non-prod-purchase', name:n, total:t });
+                DB.save(); UI.toast('Success!'); Router.go('inventory');
             },
             saveSupply() {
                 const n = document.getElementById('s-name').value, q = parseInt(document.getElementById('s-qty').value), t = parseFloat(document.getElementById('s-total').value);
@@ -379,26 +426,55 @@
                 DB.data.purchases.unshift({ date:new Date().toISOString(), type:'stock-purchase', name:n, total:t });
                 DB.save(); UI.toast('Updated!'); Router.go('inventory');
             },
+            processCSV() {
+                const file = document.getElementById('csv-file').files[0]; if(!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const lines = e.target.result.split('\n');
+                    lines.forEach((line, i) => {
+                        if(i === 0 || !line) return;
+                        const [name, price, hpp, stock, type] = line.split(',');
+                        DB.data.products.push({ id:Date.now()+i, name:name.trim(), price:parseFloat(price), hpp:parseFloat(hpp), stock:parseFloat(stock), type:type.trim() });
+                    });
+                    DB.save(); UI.toast('CSV Berhasil!'); Router.go('inventory');
+                };
+                reader.readAsText(file);
+            },
+            supply() { return `<div class="card"><h3>Catat Biaya Operasional (Misc)</h3><input type="text" id="ops-name" class="form-control mb-2" placeholder="Listrik / Gaji"><input type="number" id="ops-cost" class="form-control mb-4" placeholder="Rp..."><button class="btn btn-danger w-full" onclick="Views.saveOps()">SIMPAN BEBAN</button></div>`; },
+            saveOps() { 
+                DB.data.purchases.unshift({ date:new Date().toISOString(), type:'misc', name:document.getElementById('ops-name').value, total:parseFloat(document.getElementById('ops-cost').value) });
+                DB.save(); UI.toast('Beban Dicatat!'); Router.go('dashboard'); 
+            },
             finance() {
                 const s = DB.getStats();
-                return `<div class="card"><h3>Laporan Keuangan</h3><table style="width:100%"><tr><td>Total Penjualan</td><td align="right">${UI.fmt(s.revenue)}</td></tr><tr><td>Modal Barang Terjual</td><td align="right">(${UI.fmt(s.hpp)})</td></tr><tr><td>Operasional & Kemasan</td><td align="right">(${UI.fmt(s.exp)})</td></tr><tr style="background:#dcfce7"><td><b>LABA BERSIH</b></td><td align="right"><b style="color:green">${UI.fmt(s.netProfit)}</b></td></tr></table></div>`;
+                return `<div class="card"><h3>Laporan Keuangan Komprehensif</h3><table style="width:100%"><tr><td>Total Penjualan</td><td align="right">${UI.fmt(s.revenue)}</td></tr><tr><td>Beban HPP (Resep Terjual)</td><td align="right">(${UI.fmt(s.hppRecipe)})</td></tr><tr><td>Beban Non-Prod & Operasional</td><td align="right">(${UI.fmt(s.expMisc + s.expNonProd)})</td></tr><tr style="background:#dcfce7"><td><b>LABA BERSIH</b></td><td align="right"><b style="color:green">${UI.fmt(s.netProfit)}</b></td></tr></table></div>`;
             },
             sales() {
                 const all = [...DB.data.transactions.map(t=>({...t, src:'OFFLINE'})), ...DB.data.waOrders.map(w=>({...w, src:'ONLINE'}))].sort((a,b)=>new Date(b.date)-new Date(a.date));
                 return `<div class="card"><h3>Log Penjualan</h3><div class="table-responsive"><table><thead><tr><th>Waktu</th><th>Via</th><th>Nama</th><th align="right">Total</th></tr></thead><tbody>${all.map(s=>`<tr><td>${UI.fmtDT(s.date)}</td><td>${s.src}</td><td>${s.customer||'Toko'}</td><td align="right">${UI.fmt(s.total)}</td></tr>`).join('')}</tbody></table></div></div>`;
             },
             expenses() {
-                const rows = DB.data.purchases.map(e => `<tr><td>${UI.fmtDT(e.date)}</td><td>${e.type.replace('-usage','').replace('-purchase','').toUpperCase()}</td><td>${e.name || 'Misc'}</td><td align="right" style="color:red">${UI.fmt(e.total)}</td></tr>`).join('');
-                return `<div class="card"><h3>Log Pengeluaran (Ops & Kemasan)</h3><div class="table-responsive"><table><thead><tr><th>Waktu</th><th>Kategori</th><th>Detail</th><th align="right">Total</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+                return `
+                <div class="flex gap-2 mb-4"><button class="tab-btn active" onclick="UI.switchTab('exp-recipe')">Log Pengeluaran By Resep</button><button class="tab-btn" onclick="UI.switchTab('exp-non-prod')">Log Pengeluaran Non Produksi</button></div>
+                <div id="tab-exp-recipe" class="tab-content">
+                    <div class="card"><h3>Log HPP (Resep dari Penjualan)</h3><div class="table-responsive"><table><thead><tr><th>Waktu</th><th>Deskripsi</th><th align="right">HPP</th></tr></thead><tbody>
+                        ${DB.data.transactions.map(t => `<tr><td>${UI.fmtDT(t.date)}</td><td>Modal Resep Transaksi ${t.id}</td><td align="right" style="color:red">${UI.fmt(t.items.reduce((a,i)=>a+(i.hpp*i.qty),0))}</td></tr>`).join('')}
+                    </tbody></table></div></div>
+                </div>
+                <div id="tab-exp-non-prod" class="tab-content hidden">
+                    <div class="card"><h3>Log Biaya Non-Produksi & Misc</h3><div class="table-responsive"><table><thead><tr><th>Waktu</th><th>Kategori</th><th>Detail</th><th align="right">Biaya</th></tr></thead><tbody>
+                        ${DB.data.purchases.map(e => `<tr><td>${UI.fmtDT(e.date)}</td><td>${e.type.replace('-usage','').replace('-purchase','').toUpperCase()}</td><td>${e.name || 'Misc'}</td><td align="right" style="color:red">${UI.fmt(e.total)}</td></tr>`).join('')}
+                    </tbody></table></div></div>
+                </div>`;
             },
             employees() {
-                const rows = DB.data.employees.map(e => `<tr><td class="p-4 border-b">${e.name}</td><td class="p-4 border-b">${e.role}</td></tr>`).join('');
+                const rows = DB.data.employees.map(e => `<tr><td>${e.name}</td><td>${e.role}</td></tr>`).join('');
                 return `
                 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
                     <div class="card"><h3>Tambah Member</h3><input type="text" id="e-name" class="form-control mb-2" placeholder="Nama"><select id="e-role" class="form-control mb-2"><option value="cashier">Kasir</option><option value="admin">Admin</option></select><input type="password" id="e-pin" class="form-control mb-4" placeholder="PIN 4 Digit"><button class="btn btn-primary w-full" onclick="Views.addMember()">DAFTARKAN</button></div>
                     <div class="card"><h3>Ganti PIN Saya</h3><input type="password" id="old-p" class="form-control mb-2" placeholder="PIN Lama"><input type="password" id="new-p" class="form-control mb-4" placeholder="PIN Baru"><button class="btn btn-danger w-full" onclick="Views.changePin()">UPDATE PIN</button></div>
                 </div>
-                <div class="card mt-4"><h3>Tim</h3><table class="w-full text-left"><thead><tr class="bg-slate-50"><th>Nama</th><th>Jabatan</th></tr></thead><tbody>${rows}</tbody></table><button class="btn btn-danger w-full mt-4" onclick="if(confirm('RESET SEMUA DATA?')){localStorage.removeItem(STORAGE_KEY);location.reload();}">RESET PABRIK</button></div>`;
+                <div class="card mt-4"><h3>Tim</h3><table>${rows}</table><button class="btn btn-danger w-full mt-4" onclick="if(confirm('RESET SEMUA DATA?')){localStorage.removeItem('umkm_erp_v47');location.reload();}">RESET PABRIK</button></div>`;
             },
             addMember() {
                 const n = document.getElementById('e-name').value, p = document.getElementById('e-pin').value;
